@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وادیٔ دل — Wadi-e-Dil</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Lato:wght@300;400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    overflow: hidden;
+    font-family: 'Lato', sans-serif;
+    cursor: crosshair;
+  }
+
+  canvas { display: block; }
+
+  /* ── Title overlay ── */
+  #title-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 22px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  #nastaliq-title {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: clamp(22px, 4vw, 42px);
+    color: rgba(255, 245, 200, 0.92);
+    text-shadow: 0 2px 18px rgba(255, 150, 30, 0.6), 0 0 40px rgba(255,100,0,0.3);
+    letter-spacing: 2px;
+    direction: rtl;
+    line-height: 1.4;
+    transition: color 2s ease, text-shadow 2s ease;
+  }
+
+  #subtitle {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: clamp(9px, 1.3vw, 13px);
+    color: rgba(255, 240, 180, 0.55);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── Ghazal text ── */
+  #ghazal-overlay {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 15;
+    opacity: 0;
+    transition: opacity 3s ease;
+    max-width: 90vw;
+  }
+
+  #ghazal-overlay.visible { opacity: 1; }
+
+  #ghazal-text {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: clamp(13px, 2.5vw, 22px);
+    color: rgba(255, 230, 130, 0.9);
+    text-shadow: 0 0 20px rgba(255, 160, 20, 0.7);
+    direction: rtl;
+    line-height: 2;
+    white-space: pre-line;
+  }
+
+  #ghazal-attr {
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    color: rgba(255, 210, 100, 0.5);
+    letter-spacing: 3px;
+    margin-top: 6px;
+  }
+
+  /* ── Bottom UI bar ── */
+  #ui-bar {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(10, 5, 0, 0.55);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 160, 40, 0.2);
+    border-radius: 40px;
+    padding: 9px 22px;
+    z-index: 20;
+  }
+
+  .ui-pill {
+    background: rgba(255,160,40,0.12);
+    border: 1px solid rgba(255,160,40,0.25);
+    color: rgba(255, 235, 180, 0.85);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ui-pill:hover {
+    background: rgba(255,160,40,0.28);
+    color: #fff;
+    border-color: rgba(255,160,40,0.55);
+  }
+
+  .ui-pill.active {
+    background: rgba(255,130,30,0.35);
+    border-color: rgba(255,160,40,0.6);
+    color: #ffe090;
+  }
+
+  #time-label {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: 14px;
+    color: rgba(255, 220, 150, 0.75);
+    direction: rtl;
+    min-width: 70px;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  #divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(255,160,40,0.2);
+  }
+
+  /* ── Bloom hint ── */
+  #hint {
+    position: absolute;
+    bottom: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: rgba(255, 220, 130, 0.4);
+    text-transform: uppercase;
+    pointer-events: none;
+    z-index: 10;
+    animation: fadeHint 6s ease 2s forwards;
+  }
+
+  @keyframes fadeHint {
+    0%   { opacity: 1; }
+    70%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── Bloom particle ── */
+  .bloom-burst {
+    position: absolute;
+    pointer-events: none;
+    font-size: 18px;
+    animation: burstAway 1.2s ease-out forwards;
+    z-index: 30;
+  }
+
+  @keyframes burstAway {
+    0%   { opacity: 1; transform: scale(0.5) translateY(0); }
+    60%  { opacity: 1; transform: scale(1.4) translateY(-30px); }
+    100% { opacity: 0; transform: scale(1) translateY(-55px); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="title-overlay">
+  <div id="nastaliq-title">وادیٔ دل</div>
+  <div id="subtitle">Wadi-e-Dil &nbsp;·&nbsp; Valley of the Heart</div>
+</div>
+
+<div id="ghazal-overlay">
+  <div id="ghazal-text"></div>
+  <div id="ghazal-attr">— کاکڑ قبیلے کی غزل</div>
+</div>
+
+<div id="hint">✦ click flowers to bloom them</div>
+
+<div id="ui-bar">
+  <div id="time-label">صبح</div>
+  <div id="divider"></div>
+  <button class="ui-pill active" id="btn-speed">× slow</button>
+  <button class="ui-pill" id="btn-sound">♪ sound off</button>
+  <button class="ui-pill" id="btn-rain">☁ rain</button>
+  <button class="ui-pill" id="btn-wind">~ breeze</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  WADI-E-DIL  ·  v2  ·  Ghibli × Pashtoon aesthetic
+// ═══════════════════════════════════════════════════
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ── Time ──────────────────────────────────────────
+let t = 0.08; // start at morning
+const SPEEDS = [0.003, 0.012, 0.05];
+let speedIdx = 0;
+let rainActive = false;
+let breezeActive = false;
+let soundOn = false;
+let audioCtx = null;
+
+// ── Animation timers ──────────────────────────────
+let flowerSway = 0, radioWave = 0, starTwinkle = 0;
+let waterShimmer = 0, leafSway = 0, smokePuff = 0;
+let birdT = [0, 0.28, 0.55, 0.82];
+let fireflyT = [0, 0.18, 0.42, 0.66, 0.88];
+let cloudOffset = 0;
+let rainDrops = [];
+let breezeLines = [];
+let frame = 0;
+
+// ── Ghazal verses ──────────────────────────────────
+const ghazals = [
+  "دَ زڑو سندری ته ورشه\nچې سپوږمۍ د وادۍ ژاړي",
+  "د غرو سرو کې می زړه دی\nد ستورو رڼا کې نرمه",
+  "چې ستا خیال راشي ما ته\nشپه هم ورځ ته بدلیږي",
+];
+let ghazalIdx = 0;
+
+// ── Flowers with click-to-bloom ───────────────────
+const flowerDefs = [
+  { x: 0.19, y: 0.755, col: '#e91e63', cc: '#fff9c4', bloomed: 0, scale: 1.0 },
+  { x: 0.24, y: 0.770, col: '#ff6f00', cc: '#fff3e0', bloomed: 0, scale: 0.85 },
+  { x: 0.28, y: 0.750, col: '#d81b60', cc: '#fce4ec', bloomed: 0, scale: 1.1 },
+  { x: 0.32, y: 0.760, col: '#ffeb3b', cc: '#fffde7', bloomed: 0, scale: 0.9 },
+  { x: 0.36, y: 0.745, col: '#ff5722', cc: '#fbe9e7', bloomed: 0, scale: 1.0 },
+  { x: 0.41, y: 0.758, col: '#e91e63', cc: '#fce4ec', bloomed: 0, scale: 0.95 },
+  { x: 0.45, y: 0.770, col: '#ab47bc', cc: '#f3e5f5', bloomed: 0, scale: 1.05 },
+  { x: 0.50, y: 0.752, col: '#ff9800', cc: '#fff3e0', bloomed: 0, scale: 0.88 },
+  { x: 0.54, y: 0.765, col: '#e53935', cc: '#ffebee', bloomed: 0, scale: 1.0 },
+  { x: 0.16, y: 0.762, col: '#f06292', cc: '#fce4ec', bloomed: 0, scale: 0.82 },
+  { x: 0.58, y: 0.750, col: '#ffca28', cc: '#fff8e1', bloomed: 0, scale: 0.92 },
+];
+
+// ── Truck art pattern colors ───────────────────────
+const truckBands = ['#c0392b','#e67e22','#f1c40f','#27ae60','#2980b9','#8e44ad','#e91e63'];
+
+// ── Utilities ─────────────────────────────────────
+const lerp = (a,b,t) => a+(b-a)*t;
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+function lerpColor(c1, c2, f) {
+  const p=(h)=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+  const [r1,g1,b1]=p(c1), [r2,g2,b2]=p(c2);
+  return '#'+[lerp(r1,r2,f),lerp(g1,g2,f),lerp(b1,b2,f)].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+}
+
+// ── Sky palette (Ghibli-inspired, richer) ──────────
+function getSky(time) {
+  const palettes = [
+    { top:'#0d0d2b', bot:'#a04060', label:'Dawn',    urdu:'فجر' },
+    { top:'#5baad8', bot:'#fdf6cc', label:'Morning',  urdu:'صبح' },
+    { top:'#3d9bd0', bot:'#c8eafc', label:'Noon',     urdu:'دوپہر' },
+    { top:'#e8823a', bot:'#ffd57e', label:'Dusk',     urdu:'شام' },
+    { top:'#8e3060', bot:'#c0401a', label:'Twilight', urdu:'مغرب' },
+    { top:'#07091e', bot:'#1a1240', label:'Night',    urdu:'رات' },
+  ];
+  const n = palettes.length, idx = time*(n-1);
+  const lo = Math.floor(idx), hi = Math.min(lo+1,n-1), f = idx-lo;
+  return {
+    top: lerpColor(palettes[lo].top, palettes[hi].top, f),
+    bot: lerpColor(palettes[lo].bot, palettes[hi].bot, f),
+    label: palettes[Math.round(idx)].label,
+    urdu: palettes[Math.round(idx)].urdu,
+    nightness: clamp((time-0.72)/0.12, 0, 1),
+    duskness: clamp(1-Math.abs((time-0.62)/0.12), 0, 1),
+    morningFresh: clamp(1-Math.abs((time-0.2)/0.18), 0, 1),
+  };
+}
+
+// ═══ DRAW FUNCTIONS ══════════════════════════════
+
+function drawSky(sky) {
+  const g = ctx.createLinearGradient(0, 0, 0, H*0.60);
+  g.addColorStop(0, sky.top);
+  g.addColorStop(0.6, sky.bot);
+  g.addColorStop(1, sky.bot);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H*0.62);
+}
+
+// Ghibli-style layered cumulus clouds
+function drawClouds(sky) {
+  const night = sky.nightness;
+  if (night > 0.85) return;
+  const alpha = 1 - night * 0.9;
+  ctx.globalAlpha = alpha;
+
+  const cloudGroups = [
+    { x: 0.12, y: 0.13, w: 0.22, layers: 5, col: '#f5f5f5', shadow: '#d4cce0' },
+    { x: 0.55, y: 0.09, w: 0.18, layers: 4, col: '#ffffff', shadow: '#ddd8ee' },
+    { x: 0.78, y: 0.17, w: 0.14, layers: 3, col: '#f8f8f8', shadow: '#ccc8e0' },
+    { x: 0.35, y: 0.22, w: 0.12, layers: 3, col: '#fffff0', shadow: '#e8e4f0' },
+  ];
+
+  // tint for golden hour
+  const dusk = sky.duskness;
+
+  cloudGroups.forEach((cg, ci) => {
+    const ox = (cloudOffset * (0.8 + ci*0.15)) % (W * 0.3);
+    const cx = (cg.x * W + ox) % (W * 1.1) - W*0.05;
+    const cy = cg.y * H;
+    const cw = cg.w * W;
+
+    const colTop = dusk > 0.1 ? lerpColor(cg.col, '#ffcb8a', dusk*0.6) : cg.col;
+    const colBot = dusk > 0.1 ? lerpColor(cg.shadow, '#d4825a', dusk*0.5) : cg.shadow;
+
+    // Shadow base
+    ctx.fillStyle = colBot;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + cw*0.25, cw*0.48, cw*0.16, 0, 0, Math.PI*2);
+    ctx.fill();
+
+    // Layered puffs (Ghibli cumulus)
+    for (let p = 0; p < cg.layers; p++) {
+      const px = cx + (p - cg.layers/2) * cw*0.18;
+      const py = cy - p * cw*0.04;
+      const pr = cw * (0.12 + Math.sin(p*1.7)*0.05);
+      const g2 = ctx.createRadialGradient(px, py - pr*0.3, 0, px, py, pr);
+      g2.addColorStop(0, colTop);
+      g2.addColorStop(1, colBot);
+      ctx.fillStyle = g2;
+      ctx.beginPath();
+      ctx.arc(px, py, pr, 0, Math.PI*2);
+      ctx.fill();
+    }
+    // Top highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.beginPath();
+    ctx.ellipse(cx - cw*0.08, cy - cw*0.1, cw*0.1, cw*0.07, -0.3, 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+function drawSun(time) {
+  if (time > 0.78) return;
+  const sx = W * lerp(0.78, 0.15, time);
+  const sy = H * (0.08 + Math.sin(time * Math.PI * 0.9) * -0.05 + 0.18 - time*0.25);
+  const alpha = time < 0.66 ? 1 : 1-(time-0.66)/0.12;
+  const sunR = (time < 0.1 || time > 0.6) ? 26 : 20;
+  const sunCol = time < 0.12 ? '#ffb347' : time < 0.55 ? '#fffde7' : '#ff9800';
+
+  ctx.globalAlpha = clamp(alpha,0,1);
+  // Atmospheric haze ring
+  const haze = ctx.createRadialGradient(sx, sy, sunR, sx, sy, sunR*7);
+  haze.addColorStop(0, 'rgba(255,220,100,0.22)');
+  haze.addColorStop(0.5, 'rgba(255,160,50,0.08)');
+  haze.addColorStop(1, 'rgba(255,100,0,0)');
+  ctx.fillStyle = haze;
+  ctx.beginPath(); ctx.arc(sx, sy, sunR*7, 0, Math.PI*2); ctx.fill();
+
+  // Inner glow
+  const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, sunR*2.5);
+  glow.addColorStop(0, 'rgba(255,245,200,0.9)');
+  glow.addColorStop(0.4, 'rgba(255,220,100,0.5)');
+  glow.addColorStop(1, 'rgba(255,160,0,0)');
+  ctx.fillStyle = glow;
+  ctx.beginPath(); ctx.arc(sx, sy, sunR*2.5, 0, Math.PI*2); ctx.fill();
+
+  ctx.fillStyle = sunCol;
+  ctx.beginPath(); ctx.arc(sx, sy, sunR, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+}
+
+function drawMoon(time) {
+  if (time < 0.80) return;
+  const alpha = clamp((time-0.80)/0.1,0,1);
+  const mx = W*0.72, my = H*0.11;
+  ctx.globalAlpha = alpha;
+  // Moonlight glow
+  const mg = ctx.createRadialGradient(mx, my, 0, mx, my, 60);
+  mg.addColorStop(0, 'rgba(200,220,255,0.15)');
+  mg.addColorStop(1, 'rgba(100,130,200,0)');
+  ctx.fillStyle = mg; ctx.beginPath(); ctx.arc(mx, my, 60, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#e8f0ff';
+  ctx.beginPath(); ctx.arc(mx, my, 22, 0, Math.PI*2); ctx.fill();
+  // Crescent shadow
+  ctx.fillStyle = '#07091e';
+  ctx.beginPath(); ctx.arc(mx+9, my-4, 19, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
+}
+
+function drawStars(time) {
+  if (time < 0.76) return;
+  const alpha = clamp((time-0.76)/0.12,0,1);
+  const stars = [
+    [0.07,0.04,1.4],[0.16,0.10,1.0],[0.27,0.03,1.6],[0.37,0.08,1.2],[0.47,0.02,1.8],
+    [0.58,0.11,1.0],[0.63,0.06,1.4],[0.68,0.01,1.2],[0.82,0.07,1.6],[0.89,0.04,1.0],
+    [0.94,0.13,1.3],[0.04,0.17,0.9],[0.22,0.19,1.1],[0.43,0.17,1.3],[0.61,0.20,0.9],
+    [0.79,0.15,1.2],[0.91,0.21,1.0],[0.12,0.27,1.0],[0.34,0.24,1.4],[0.53,0.26,1.1],
+    [0.71,0.29,1.3],[0.86,0.27,0.9],[0.18,0.35,1.5],[0.30,0.31,1.2],[0.48,0.33,1.0],
+    [0.10,0.08,0.8],[0.50,0.14,1.2],[0.76,0.05,1.0],[0.40,0.28,0.9],[0.66,0.16,1.1],
+  ];
+  ctx.globalAlpha = alpha;
+  stars.forEach(([sx,sy,r],i) => {
+    const tw = (Math.sin(starTwinkle*2.1+i*1.9)+1)/2;
+    // Some stars get cross-sparkle
+    if (r > 1.3) {
+      ctx.strokeStyle = `rgba(200,220,255,${0.2+tw*0.4})`;
+      ctx.lineWidth = 0.5;
+      const px = sx*W, py = sy*H*0.6, s = r*3;
+      ctx.beginPath(); ctx.moveTo(px-s,py); ctx.lineTo(px+s,py); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px,py-s); ctx.lineTo(px,py+s); ctx.stroke();
+    }
+    ctx.fillStyle = `rgba(220,235,255,${0.55+tw*0.45})`;
+    ctx.beginPath(); ctx.arc(sx*W, sy*H*0.6, r*(0.7+tw*0.4), 0, Math.PI*2); ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+// Ghibli-style layered mountains (Hindukush / Karakoram feel)
+function drawMountains(sky) {
+  const night = sky.nightness, dusk = sky.duskness;
+
+  // Layer 3 – distant haze range
+  const h3c = night > 0.5 ? '#0d1528' : dusk > 0.3 ? '#7a4060' : '#8aaec8';
+  ctx.fillStyle = h3c;
+  ctx.beginPath();
+  ctx.moveTo(0, H*0.50);
+  [0,.05,.13,.22,.30,.40,.50,.60,.70,.80,.88,.95,1].forEach((x,i) => {
+    const pts = [0.50,0.32,0.44,0.26,0.38,0.20,0.32,0.24,0.35,0.27,0.38,0.30,0.50];
+    ctx.lineTo(x*W, pts[i]*H);
+  });
+  ctx.lineTo(W, H*0.50); ctx.closePath(); ctx.fill();
+
+  // Layer 2 – mid mountains
+  const h2c = night > 0.5 ? '#0a1220' : dusk > 0.3 ? '#5a3050' : '#5a8070';
+  ctx.fillStyle = h2c;
+  ctx.beginPath();
+  ctx.moveTo(0, H*0.56);
+  [0,.06,.15,.24,.34,.44,.54,.64,.74,.84,.92,.98,1].forEach((x,i) => {
+    const pts = [0.56,0.38,0.50,0.33,0.46,0.28,0.40,0.31,0.44,0.35,0.42,0.46,0.56];
+    ctx.lineTo(x*W, pts[i]*H);
+  });
+  ctx.lineTo(W, H*0.56); ctx.closePath(); ctx.fill();
+
+  // Layer 1 – foreground hills (rich green / Ghibli meadow slope)
+  const h1c = night > 0.5 ? '#081408' : dusk > 0.3 ? '#2a3a18' : '#3a6030';
+  const h1c2 = night > 0.5 ? '#050f05' : dusk > 0.3 ? '#1c2c10' : '#2a5020';
+  const hg = ctx.createLinearGradient(0, H*0.52, 0, H*0.65);
+  hg.addColorStop(0, h1c);
+  hg.addColorStop(1, h1c2);
+  ctx.fillStyle = hg;
+  ctx.beginPath();
+  ctx.moveTo(0, H*0.62);
+  ctx.bezierCurveTo(W*0.1,H*0.48, W*0.25,H*0.56, W*0.38,H*0.50);
+  ctx.bezierCurveTo(W*0.50,H*0.44, W*0.60,H*0.52, W*0.72,H*0.47);
+  ctx.bezierCurveTo(W*0.82,H*0.43, W*0.92,H*0.50, W,H*0.54);
+  ctx.lineTo(W, H*0.65); ctx.lineTo(0, H*0.65); ctx.closePath(); ctx.fill();
+}
+
+function drawSnowCaps(sky) {
+  if (sky.nightness > 0.6) return;
+  const caps = [[W*0.22,H*0.26],[W*0.40,H*0.20],[W*0.60,H*0.24],[W*0.80,H*0.27]];
+  caps.forEach(([px,py]) => {
+    const g = ctx.createRadialGradient(px, py, 0, px, py, 28);
+    g.addColorStop(0, 'rgba(255,255,255,0.95)');
+    g.addColorStop(0.5, 'rgba(220,235,255,0.6)');
+    g.addColorStop(1, 'rgba(180,200,220,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(px-22,py+14); ctx.lineTo(px,py-10); ctx.lineTo(px+22,py+14);
+    ctx.closePath(); ctx.fill();
+  });
+}
+
+// Rich Ghibli-style valley with texture
+function drawValley(sky) {
+  const night = sky.nightness;
+  const dusk = sky.duskness;
+  const col1 = night > 0.5 ? '#0b1c08' : dusk > 0.3 ? '#2c3c10' : '#4a7a28';
+  const col2 = night > 0.5 ? '#060e04' : dusk > 0.3 ? '#1a2808' : '#2e5818';
+  const vg = ctx.createLinearGradient(0, H*0.60, 0, H*0.82);
+  vg.addColorStop(0, col1);
+  vg.addColorStop(1, col2);
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, H*0.60, W, H*0.22);
+
+  // Grass texture strokes
+  ctx.globalAlpha = 0.35;
+  const gc = night > 0.5 ? '#0d2208' : dusk > 0.3 ? '#3a5010' : '#5a8030';
+  for (let i=0; i<28; i++) {
+    const gx = (i/28)*W;
+    const gy = H*0.62 + Math.sin(gx*0.01+leafSway)*4;
+    ctx.strokeStyle = gc; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(gx, gy+8);
+    ctx.bezierCurveTo(gx-3, gy+2, gx+3, gy-4, gx+Math.sin(leafSway+i)*4, gy-8);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Ghibli river with caustics and reflection
+function drawRiver(sky) {
+  const night = sky.nightness, golden = sky.duskness;
+  const rCol = night > 0.5 ? '#08122a' : golden > 0.4 ? '#8a4a1a' : '#4a9ac4';
+  const rHigh = night > 0.5 ? '#1a3060' : golden > 0.4 ? '#ffb050' : '#90d0f0';
+
+  const ry = H*0.665, rh = H*0.095;
+  // River body with Ghibli wave top
+  ctx.fillStyle = rCol;
+  ctx.beginPath();
+  ctx.moveTo(0, ry);
+  for (let x=0; x<=W; x+=8) {
+    const wave = Math.sin(x*0.015 + waterShimmer) * 3 + Math.sin(x*0.03 + waterShimmer*1.3) * 1.5;
+    if (x===0) ctx.moveTo(x, ry+wave);
+    else ctx.lineTo(x, ry+wave);
+  }
+  ctx.lineTo(W, ry+rh); ctx.lineTo(0, ry+rh); ctx.closePath(); ctx.fill();
+
+  // Caustic light patterns
+  for (let i=0; i<8; i++) {
+    const rx2 = (i*W*0.13 + Math.sin(waterShimmer*0.7+i)*30) % W;
+    const ry2 = ry + rh*0.25 + Math.sin(waterShimmer*1.2+i)*5;
+    ctx.strokeStyle = rHigh; ctx.lineWidth = 1.2;
+    ctx.globalAlpha = 0.2 + Math.sin(waterShimmer+i*0.9)*0.18;
+    ctx.beginPath();
+    ctx.moveTo(rx2-18, ry2);
+    ctx.bezierCurveTo(rx2-8, ry2-3, rx2+8, ry2+3, rx2+18, ry2);
+    ctx.stroke();
+  }
+  // Reflection shimmer
+  if (night < 0.8) {
+    for (let i=0; i<3; i++) {
+      const rx3 = W*(0.2+i*0.28) + Math.sin(waterShimmer*0.5+i)*20;
+      ctx.fillStyle = rHigh;
+      ctx.globalAlpha = 0.08 + Math.sin(waterShimmer*2+i)*0.06;
+      ctx.beginPath();
+      ctx.ellipse(rx3, ry+rh*0.5, 30+Math.sin(waterShimmer+i)*10, 5, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Stone bridge (Pakistani village style)
+function drawBridge(sky) {
+  const night = sky.nightness;
+  const stoneCol = night > 0.5 ? '#1a1208' : '#8a7055';
+  const mortarCol = night > 0.5 ? '#120d05' : '#6a5540';
+  const bx = W*0.60, by = H*0.665, bw = W*0.08, bh = H*0.05;
+
+  // Arch shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.beginPath();
+  ctx.arc(bx + bw/2, by + bh*0.15, bw*0.35, 0, Math.PI);
+  ctx.fill();
+
+  // Bridge body
+  ctx.fillStyle = stoneCol;
+  ctx.beginPath();
+  ctx.roundRect(bx, by - bh*0.2, bw, bh*0.9, 4);
+  ctx.fill();
+
+  // Stone texture
+  for (let row=0; row<3; row++) {
+    for (let col=0; col<4; col++) {
+      ctx.fillStyle = mortarCol;
+      ctx.fillRect(bx + col*(bw/4)+1, by - bh*0.2 + row*(bh*0.3)+1, bw/4-2, bh*0.3-2);
+      ctx.fillStyle = stoneCol;
+      ctx.fillRect(bx + col*(bw/4)+2, by - bh*0.2 + row*(bh*0.3)+2, bw/4-4, bh*0.3-4);
+    }
+  }
+
+  // Arch cutout
+  ctx.fillStyle = night > 0.5 ? '#08122a' : '#4a9ac4';
+  ctx.beginPath();
+  ctx.arc(bx + bw/2, by + bh*0.7, bw*0.3, Math.PI, 0, true);
+  ctx.fill();
+}
+
+// Mud-brick wall with trickle stream (kucchi gali)
+function drawMudWall(sky) {
+  const night = sky.nightness;
+  const wall = night > 0.5 ? '#1a0f05' : '#a0785a';
+  const wall2 = night > 0.5 ? '#120a02' : '#8a6040';
+
+  // Left wall
+  ctx.fillStyle = wall;
+  ctx.fillRect(0, H*0.64, W*0.14, H*0.2);
+  // Wall texture
+  for (let r=0; r<6; r++) {
+    ctx.fillStyle = wall2;
+    ctx.fillRect(2, H*0.645 + r*H*0.028, W*0.13, H*0.012);
+  }
+  // Vine/creeper on wall
+  if (sky.nightness < 0.8) {
+    ctx.strokeStyle = '#3a7028'; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(W*0.04, H*0.64);
+    ctx.bezierCurveTo(W*0.02, H*0.66, W*0.06, H*0.68, W*0.03, H*0.72);
+    ctx.stroke();
+    // Vine leaves
+    for (let v=0; v<4; v++) {
+      const vx = W*(0.02+v*0.01), vy = H*(0.655+v*0.018);
+      ctx.fillStyle = '#4a8030';
+      ctx.beginPath();
+      ctx.ellipse(vx, vy, 5, 3, -0.5+v*0.3, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Small stream alongside
+  const streamCol = night > 0.5 ? '#081018' : '#60a0c0';
+  ctx.fillStyle = streamCol;
+  ctx.beginPath();
+  ctx.moveTo(W*0.10, H*0.66);
+  ctx.bezierCurveTo(W*0.11, H*0.675, W*0.09, H*0.69, W*0.10, H*0.705);
+  ctx.lineTo(W*0.12, H*0.705);
+  ctx.bezierCurveTo(W*0.13, H*0.69, W*0.11, H*0.675, W*0.12, H*0.66);
+  ctx.closePath(); ctx.fill();
+}
+
+// Poplars and chinar trees (Pashtoon valley style)
+function drawTrees(sky) {
+  const night = sky.nightness;
+  const trunkCol = night > 0.5 ? '#1a0d00' : '#4a2c10';
+  const leafBase = night > 0.5 ? '#071008' : '#2a7020';
+  const leafLight = night > 0.5 ? '#0c1a0c' : '#3a9030';
+
+  const trees = [
+    // Poplars left (tall narrow)
+    { x:W*0.04, y:H*0.60, type:'poplar', sc:1.0 },
+    { x:W*0.08, y:H*0.57, type:'poplar', sc:1.25 },
+    { x:W*0.12, y:H*0.61, type:'poplar', sc:0.85 },
+    // Chinar trees right
+    { x:W*0.80, y:H*0.58, type:'chinar', sc:1.1 },
+    { x:W*0.87, y:H*0.55, type:'chinar', sc:1.3 },
+    { x:W*0.93, y:H*0.60, type:'chinar', sc:0.9 },
+    { x:W*0.97, y:H*0.57, type:'chinar', sc:1.0 },
+  ];
+
+  trees.forEach(({ x:tx, y:ty, type, sc }) => {
+    const sway = Math.sin(leafSway*0.8 + tx*0.008 + (breezeActive ? Math.sin(frame*0.04)*0.5 : 0)) * (breezeActive ? 6 : 2) * sc;
+
+    if (type === 'poplar') {
+      // Tall narrow poplar
+      ctx.fillStyle = trunkCol;
+      ctx.fillRect(tx-3*sc, ty, 5*sc, 38*sc);
+      const g = ctx.createRadialGradient(tx+sway, ty-15*sc, 0, tx+sway, ty, 14*sc);
+      g.addColorStop(0, leafLight); g.addColorStop(1, leafBase);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.ellipse(tx+sway*0.5, ty-18*sc, 9*sc, 22*sc, sway*0.03, 0, Math.PI*2);
+      ctx.fill();
+    } else {
+      // Spreading chinar (like maple/plane tree)
+      ctx.fillStyle = trunkCol;
+      ctx.fillRect(tx-4*sc, ty, 8*sc, 25*sc);
+      // Multi-lobe canopy
+      for (let lobe=0; lobe<5; lobe++) {
+        const lx = tx + (lobe-2)*12*sc + sway*(0.5+lobe*0.1);
+        const ly = ty - (8+Math.abs(lobe-2)*3)*sc;
+        const lr = (14-Math.abs(lobe-2)*2)*sc;
+        const lg = ctx.createRadialGradient(lx, ly-lr*0.3, 0, lx, ly, lr);
+        lg.addColorStop(0, leafLight); lg.addColorStop(1, leafBase);
+        ctx.fillStyle = lg;
+        ctx.beginPath(); ctx.arc(lx, ly, lr, 0, Math.PI*2); ctx.fill();
+      }
+    }
+  });
+}
+
+// Mustard / wheat field
+function drawField(sky) {
+  const night = sky.nightness;
+  const fc = night > 0.5 ? '#0a1205' : sky.duskness > 0.3 ? '#b08020' : '#d4a820';
+  const fx = W*0.62, fy = H*0.735, fw = W*0.15, fh = H*0.06;
+
+  const fg = ctx.createLinearGradient(fx, fy, fx, fy+fh);
+  fg.addColorStop(0, fc);
+  fg.addColorStop(1, night > 0.5 ? '#050a02' : '#8a6010');
+  ctx.fillStyle = fg;
+  ctx.fillRect(fx, fy, fw, fh);
+
+  for (let s=0; s<16; s++) {
+    const sx = fx + s*(fw/16) + 2;
+    const sw = Math.sin(leafSway*1.1 + s*0.6 + (breezeActive ? frame*0.06 : 0)) * (breezeActive ? 7 : 3);
+    ctx.strokeStyle = night > 0.5 ? '#1a2408' : '#b08820';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(sx, fy+fh); ctx.lineTo(sx+sw, fy+4); ctx.stroke();
+    ctx.fillStyle = night > 0.5 ? '#1a2a08' : fc;
+    ctx.beginPath(); ctx.arc(sx+sw, fy+2, 3.5, 0, Math.PI*2); ctx.fill();
+  }
+}
+
+// Mud-brick hut with courtyard feel
+function drawHut(sky) {
+  const night = sky.nightness;
+  const wallC = night > 0.5 ? '#1a0d03' : '#b08a60';
+  const roofC = night > 0.5 ? '#0d0800' : '#7a5030';
+  const hx = W*0.76, hy = H*0.625;
+
+  // Wall
+  ctx.fillStyle = wallC;
+  ctx.fillRect(hx, hy, 52, 32);
+
+  // Mud texture bands
+  for (let r=0; r<4; r++) {
+    ctx.fillStyle = night > 0.5 ? '#120902' : '#9a7a50';
+    ctx.fillRect(hx, hy+r*8, 52, 2);
+  }
+
+  // Roof (flat + parapet)
+  ctx.fillStyle = roofC;
+  ctx.fillRect(hx-4, hy-6, 60, 8);
+
+  // Wooden door
+  ctx.fillStyle = night > 0.5 ? '#0d0802' : '#5a3818';
+  ctx.fillRect(hx+18, hy+10, 16, 22);
+  ctx.strokeStyle = night > 0.5 ? '#1a1005' : '#8a6030';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(hx+26, hy+10); ctx.lineTo(hx+26, hy+32); ctx.stroke();
+  // Door arch
+  ctx.fillStyle = night > 0.5 ? '#0d0802' : '#5a3818';
+  ctx.beginPath(); ctx.arc(hx+26, hy+12, 8, Math.PI, 0); ctx.fill();
+
+  // Window glow at night
+  if (night > 0.5) {
+    const wa = (night-0.5)/0.3;
+    ctx.fillStyle = '#ff9800'; ctx.globalAlpha = 0.75*wa;
+    ctx.fillRect(hx+4, hy+8, 11, 10);
+    const wg = ctx.createRadialGradient(hx+9, hy+13, 0, hx+9, hy+13, 45);
+    wg.addColorStop(0, 'rgba(255,160,20,0.5)');
+    wg.addColorStop(1, 'rgba(255,80,0,0)');
+    ctx.fillStyle = wg; ctx.globalAlpha = wa*0.4;
+    ctx.beginPath(); ctx.arc(hx+9, hy+13, 45, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // Smoke
+  const sc2 = night > 0.5 ? 'rgba(60,60,80,' : 'rgba(160,160,170,';
+  for (let p=0; p<4; p++) {
+    const ph = (smokePuff + p*0.25)%1;
+    const sy = hy-6 - ph*50;
+    const sr = 4 + ph*10;
+    ctx.globalAlpha = (1-ph)*0.25;
+    ctx.fillStyle = sc2+(1-ph)*0.3+')';
+    ctx.beginPath();
+    ctx.arc(hx+10+Math.sin(ph*5)*6, sy, sr, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Ground / foreground
+function drawGround(sky) {
+  const night = sky.nightness;
+  const gc = night > 0.5 ? '#060c04' : sky.duskness > 0.3 ? '#1a2a08' : '#2e5818';
+  const gbot = night > 0.5 ? '#040804' : '#1e3e10';
+  const gg = ctx.createLinearGradient(0, H*0.80, 0, H);
+  gg.addColorStop(0, gc); gg.addColorStop(1, gbot);
+  ctx.fillStyle = gg;
+  ctx.fillRect(0, H*0.80, W, H*0.20);
+  // Dirt path
+  const pc = night > 0.5 ? '#1a1005' : '#a07848';
+  ctx.fillStyle = pc;
+  ctx.beginPath();
+  ctx.moveTo(W*0.28, H*0.80);
+  ctx.bezierCurveTo(W*0.30, H*0.88, W*0.36, H*0.92, W*0.40, H);
+  ctx.bezierCurveTo(W*0.50, H, W*0.56, H*0.92, W*0.60, H*0.80);
+  ctx.closePath(); ctx.fill();
+}
+
+// Flowers — interactive, bloom on click
+function drawFlowers(sky, dt) {
+  const night = sky.nightness;
+  flowerDefs.forEach((f, i) => {
+    // Animate bloom
+    if (f.bloomed > 0) f.bloomed = Math.max(0, f.bloomed - dt * 0.4);
+    const sc = f.scale * (1 + f.bloomed * 0.5);
+    const sway = Math.sin(flowerSway*1.2 + i*0.9 + (breezeActive ? frame*0.05 : 0)) * (breezeActive ? 8 : 4);
+    const alpha = night > 0.5 ? 0.3 : 1;
+    ctx.globalAlpha = alpha;
+    ctx.save();
+    ctx.translate(f.x*W + sway, f.y*H);
+    ctx.scale(sc, sc);
+    // Stem
+    ctx.strokeStyle = '#3a8028'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, 14); ctx.stroke();
+    // Leaf
+    ctx.fillStyle = '#4a9030';
+    ctx.beginPath(); ctx.ellipse(-5, 7, 5, 3, -0.5, 0, Math.PI*2); ctx.fill();
+    // Petals
+    const nPetals = f.bloomed > 0.3 ? 8 : 5;
+    for (let p=0; p<nPetals; p++) {
+      ctx.save();
+      ctx.rotate((p/nPetals)*Math.PI*2 + (f.bloomed>0 ? f.bloomed*0.5 : 0));
+      ctx.fillStyle = f.col;
+      ctx.globalAlpha = alpha * (f.bloomed > 0 ? 1 : 0.9);
+      ctx.beginPath();
+      ctx.ellipse(0, -8, 3.5*(1+f.bloomed*0.3), 7*(1+f.bloomed*0.2), 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    // Center
+    const cg = ctx.createRadialGradient(0,0,0,0,0,5);
+    cg.addColorStop(0, f.bloomed > 0 ? '#fff176' : f.cc);
+    cg.addColorStop(1, f.bloomed > 0 ? '#ff9800' : f.col);
+    ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(0, 0, 4+f.bloomed, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  });
+}
+
+// Main character: man in shalwar kameez, pakol hat, peshawri chappal
+function drawMan(sky) {
+  const night = sky.nightness;
+  const mx = W*0.37, my = H*0.67;
+  const kc = night > 0.5 ? '#1a2a5e' : '#2563a8';
+  const skin = '#c88848';
+
+  // Charpai
+  ctx.fillStyle = night > 0.5 ? '#2a1808' : '#8d6e63';
+  ctx.fillRect(mx-30, my+28, 60, 9);
+  ctx.fillRect(mx-30, my+28, 6, 22);
+  ctx.fillRect(mx+24, my+28, 6, 22);
+  // Weave
+  ctx.strokeStyle = night > 0.5 ? '#3a2810' : '#a08870';
+  ctx.lineWidth = 1;
+  for (let ci=0; ci<7; ci++) {
+    ctx.beginPath(); ctx.moveTo(mx-24+ci*8, my+28); ctx.lineTo(mx-24+ci*8, my+37); ctx.stroke();
+  }
+  for (let ri=0; ri<3; ri++) {
+    ctx.beginPath(); ctx.moveTo(mx-24, my+29+ri*3); ctx.lineTo(mx+24, my+29+ri*3); ctx.stroke();
+  }
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath(); ctx.ellipse(mx, my+52, 22, 5, 0, 0, Math.PI*2); ctx.fill();
+
+  // Shalwar
+  ctx.fillStyle = night > 0.5 ? '#1a1a2e' : '#2c3848';
+  ctx.beginPath();
+  ctx.moveTo(mx-15, my+12);
+  ctx.bezierCurveTo(mx-15, my+36, mx-8, my+46, mx-4, my+52);
+  ctx.lineTo(mx+4, my+52);
+  ctx.bezierCurveTo(mx+8, my+46, mx+15, my+36, mx+15, my+12);
+  ctx.closePath(); ctx.fill();
+
+  // Kameez
+  ctx.fillStyle = kc;
+  ctx.beginPath();
+  ctx.moveTo(mx-15, my+12);
+  ctx.lineTo(mx-18, my-10);
+  ctx.bezierCurveTo(mx-12, my-15, mx+12, my-15, mx+18, my-10);
+  ctx.lineTo(mx+15, my+12);
+  ctx.closePath(); ctx.fill();
+
+  // Embroidery (truck-art inspired, small color band on collar)
+  ['#c0392b','#e67e22','#27ae60'].forEach((c, ci) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(mx-2+ci*1.5, my-15, 1.5, 12);
+  });
+
+  // Arms
+  ctx.fillStyle = kc;
+  // Left arm (slightly raised holding tea cup)
+  ctx.beginPath();
+  ctx.moveTo(mx-18, my-7);
+  ctx.bezierCurveTo(mx-26, my+5, mx-24, my+18, mx-19, my+20);
+  ctx.lineTo(mx-15, my+19);
+  ctx.bezierCurveTo(mx-15, my+12, mx-15, my-2, mx-13, my-7);
+  ctx.closePath(); ctx.fill();
+  // Right arm (relaxed)
+  ctx.beginPath();
+  ctx.moveTo(mx+18, my-7);
+  ctx.bezierCurveTo(mx+26, my+8, mx+23, my+19, mx+18, my+20);
+  ctx.lineTo(mx+14, my+19);
+  ctx.bezierCurveTo(mx+14, my+10, mx+14, my-2, mx+12, my-7);
+  ctx.closePath(); ctx.fill();
+
+  // Hands
+  ctx.fillStyle = skin;
+  ctx.beginPath(); ctx.ellipse(mx-19, my+22, 4.5, 5.5, 0.3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(mx+19, my+22, 4.5, 5.5, -0.3, 0, Math.PI*2); ctx.fill();
+
+  // Tea cup (chai glass)
+  ctx.fillStyle = '#d4a060'; ctx.strokeStyle = '#8a5820'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(mx-23, my+18); ctx.lineTo(mx-21, my+28); ctx.lineTo(mx-15, my+28); ctx.lineTo(mx-13, my+18); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = 'rgba(180,80,20,0.6)';
+  ctx.beginPath(); ctx.ellipse(mx-18, my+20, 4, 1.5, 0, 0, Math.PI*2); ctx.fill();
+  // Steam from chai
+  ctx.strokeStyle = 'rgba(200,200,200,0.4)'; ctx.lineWidth = 1;
+  for (let s=0; s<2; s++) {
+    ctx.beginPath();
+    ctx.moveTo(mx-18+s*4, my+17);
+    ctx.bezierCurveTo(mx-20+s*4, my+12, mx-16+s*4, my+8, mx-18+s*4, my+4);
+    ctx.stroke();
+  }
+
+  // Neck + Head
+  ctx.fillStyle = skin;
+  ctx.fillRect(mx-4, my-24, 8, 12);
+  ctx.beginPath(); ctx.arc(mx, my-32, 14, 0, Math.PI*2); ctx.fill();
+
+  // Pakol hat (Pashtoon)
+  // Brim roll
+  ctx.fillStyle = '#6d4c2a';
+  ctx.beginPath();
+  ctx.ellipse(mx, my-40, 17, 7, 0, 0, Math.PI*2); ctx.fill();
+  // Roll band texture
+  ctx.strokeStyle = '#5a3a1a'; ctx.lineWidth = 1;
+  for (let rb=0; rb<5; rb++) {
+    ctx.beginPath();
+    ctx.ellipse(mx, my-40, 17-rb*0.5, 7-rb*0.3, 0, 0.2, Math.PI-0.2); ctx.stroke();
+  }
+  // Cap top
+  ctx.fillStyle = '#8d6040';
+  ctx.beginPath();
+  ctx.ellipse(mx, my-42, 11, 5, 0, Math.PI, Math.PI*2); ctx.fill();
+
+  // Face
+  ctx.fillStyle = '#3d2010';
+  ctx.beginPath(); ctx.ellipse(mx-5, my-33, 2, 2.5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(mx+5, my-33, 2, 2.5, 0, 0, Math.PI*2); ctx.fill();
+  // Mustache
+  ctx.strokeStyle = '#2a1008'; ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.moveTo(mx-6, my-26);
+  ctx.bezierCurveTo(mx-2, my-28, mx+2, my-28, mx+6, my-26);
+  ctx.stroke();
+
+  // Peshawri chappal
+  ctx.fillStyle = night > 0.5 ? '#5a3a18' : '#9a6a38';
+  ctx.beginPath(); ctx.ellipse(mx-8, my+54, 9, 3.5, 0.15, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(mx+8, my+54, 9, 3.5, -0.15, 0, Math.PI*2); ctx.fill();
+  // Chappal strap
+  ctx.strokeStyle = night > 0.5 ? '#3a2210' : '#7a5020'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(mx-12, my+52); ctx.lineTo(mx-5, my+54); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(mx+12, my+52); ctx.lineTo(mx+5, my+54); ctx.stroke();
+}
+
+// Vintage transistor radio with truck art decoration
+function drawRadio(sky) {
+  const night = sky.nightness;
+  const rx = W*0.49, ry = H*0.74;
+  const bodyC = night > 0.5 ? '#1a1008' : '#7a5030';
+
+  ctx.fillStyle = bodyC;
+  ctx.beginPath(); ctx.roundRect(rx, ry, 48, 30, 5); ctx.fill();
+
+  // Truck art color stripes
+  ['#c0392b','#e67e22','#27ae60','#2980b9'].forEach((c,i) => {
+    ctx.fillStyle = c;
+    ctx.fillRect(rx, ry + i*2.5, 48, 2.5);
+  });
+
+  // Speaker grille (dots)
+  for (let gr=0; gr<4; gr++) {
+    for (let gc2=0; gc2<2; gc2++) {
+      ctx.fillStyle = night > 0.5 ? '#2a1a08' : '#5a3818';
+      ctx.beginPath(); ctx.arc(rx+4+gc2*5, ry+13+gr*3.5, 1.2, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Dial face
+  ctx.fillStyle = '#e0d8c0';
+  ctx.beginPath(); ctx.roundRect(rx+16, ry+8, 16, 12, 2); ctx.fill();
+  // Dial needle
+  ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(rx+24, ry+8); ctx.lineTo(rx+24, ry+20); ctx.stroke();
+
+  // Tuning knob
+  ctx.fillStyle = '#8a6030';
+  ctx.beginPath(); ctx.arc(rx+40, ry+16, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#6a4020';
+  ctx.beginPath(); ctx.arc(rx+40, ry+16, 3.5, 0, Math.PI*2); ctx.fill();
+
+  // Antenna
+  ctx.strokeStyle = night > 0.5 ? '#3a2a10' : '#9a7840';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(rx+44, ry); ctx.lineTo(rx+40, ry-22); ctx.stroke();
+  ctx.beginPath(); ctx.arc(rx+40, ry-22, 2, 0, Math.PI*2);
+  ctx.fillStyle = night > 0.5 ? '#3a2a10' : '#9a7840'; ctx.fill();
+
+  // Sound waves (animated)
+  const wc = night > 0.5 ? 'rgba(255,180,50,' : 'rgba(200,60,100,';
+  for (let w=0; w<4; w++) {
+    const ph = radioWave + w*0.65;
+    const wa = clamp(0.15 + Math.sin(ph)*0.25, 0, 0.5);
+    ctx.globalAlpha = wa;
+    ctx.strokeStyle = wc + wa + ')';
+    ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.arc(rx+8, ry+16, 7+w*8, -0.9, 0.9); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Birds (Ghibli-style, varied sizes)
+function drawBirds(sky) {
+  if (sky.nightness > 0.80) return;
+  const bc = sky.duskness > 0.4 ? '#3a1008' : '#1a1818';
+  birdT.forEach((bt, i) => {
+    const bx = (bt % 1) * W * 1.15 - W*0.07;
+    const by = H*(0.12 + i*0.04) + Math.sin(bt*7+i*1.3)*H*0.06;
+    const flap = Math.sin(bt*22+i*2.3);
+    const bs = 0.7 + (i%2)*0.4; // varied sizes
+    ctx.strokeStyle = bc; ctx.lineWidth = 1.5*bs;
+    ctx.beginPath();
+    ctx.moveTo(bx-11*bs, by+flap*3*bs);
+    ctx.quadraticCurveTo(bx-4, by-6*bs+flap*2, bx, by);
+    ctx.quadraticCurveTo(bx+4, by-6*bs+flap*2, bx+11*bs, by+flap*3*bs);
+    ctx.stroke();
+  });
+}
+
+// Fireflies at night
+function drawFireflies(sky) {
+  if (sky.nightness < 0.5) return;
+  const alpha = clamp((sky.nightness-0.5)/0.25,0,1);
+  const ffPositions = [
+    [0.22,0.58],[0.30,0.62],[0.45,0.56],[0.60,0.60],[0.70,0.58],
+    [0.33,0.65],[0.52,0.63],[0.65,0.56],[0.77,0.62],[0.18,0.64],
+  ];
+  ffPositions.forEach(([fx,fy], i) => {
+    const ft = fireflyT[i%fireflyT.length];
+    const glow = Math.sin(ft*4.5+i*1.7) > 0.2;
+    if (!glow) return;
+    const ffx = fx*W + Math.sin(ft*2.5+i)*25;
+    const ffy = fy*H + Math.cos(ft*2+i*0.8)*18;
+    ctx.globalAlpha = alpha*(0.4+Math.sin(ft*4)*0.6);
+    const gg = ctx.createRadialGradient(ffx, ffy, 0, ffx, ffy, 10);
+    gg.addColorStop(0, 'rgba(200,255,80,1)');
+    gg.addColorStop(1, 'rgba(100,240,40,0)');
+    ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(ffx, ffy, 10, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ddff66';
+    ctx.beginPath(); ctx.arc(ffx, ffy, 2, 0, Math.PI*2); ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+// Lantern hanging from tree
+function drawLantern(sky) {
+  if (sky.nightness < 0.3) return;
+  const alpha = clamp((sky.nightness-0.3)/0.2, 0, 1);
+  const lx = W*0.44, ly = H*0.60;
+  ctx.globalAlpha = alpha;
+  // Rope
+  ctx.strokeStyle = '#5a3a10'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(lx, H*0.56);
+  ctx.bezierCurveTo(lx+3, H*0.57, lx-2, H*0.58, lx, ly-8);
+  ctx.stroke();
+  // Glow
+  const lg = ctx.createRadialGradient(lx, ly+10, 0, lx, ly+10, 50);
+  lg.addColorStop(0, 'rgba(255,150,20,0.55)');
+  lg.addColorStop(1, 'rgba(255,80,0,0)');
+  ctx.fillStyle = lg;
+  ctx.beginPath(); ctx.arc(lx, ly+10, 50, 0, Math.PI*2); ctx.fill();
+  // Body (traditional Pakistani kandeel shape)
+  ctx.fillStyle = '#d35400';
+  ctx.beginPath();
+  ctx.moveTo(lx-8, ly-6); ctx.lineTo(lx-10, ly+18); ctx.lineTo(lx+10, ly+18); ctx.lineTo(lx+8, ly-6);
+  ctx.closePath(); ctx.fill();
+  // Top cap
+  ctx.fillStyle = '#8d2200';
+  ctx.beginPath(); ctx.moveTo(lx-10, ly-6); ctx.lineTo(lx, ly-14); ctx.lineTo(lx+10, ly-6); ctx.closePath(); ctx.fill();
+  // Light panel
+  ctx.fillStyle = 'rgba(255,210,50,0.85)';
+  ctx.beginPath(); ctx.roundRect(lx-6, ly-2, 12, 16, 2); ctx.fill();
+  // Fringe
+  for (let fr=0; fr<5; fr++) {
+    ctx.fillStyle = '#c0392b';
+    ctx.beginPath(); ctx.moveTo(lx-8+fr*4, ly+18); ctx.lineTo(lx-10+fr*4, ly+26); ctx.lineTo(lx-6+fr*4, ly+26); ctx.closePath(); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// Morning mist (Ghibli drifting)
+function drawMist(sky) {
+  const t2 = sky.morningFresh;
+  if (t2 < 0.1) return;
+  for (let m=0; m<3; m++) {
+    const mx2 = (cloudOffset*0.3 + m*W*0.35) % (W*1.2) - W*0.1;
+    const mw = W*(0.25 + m*0.08);
+    const my2 = H*(0.66 + m*0.04);
+    const mg = ctx.createRadialGradient(mx2, my2, 0, mx2, my2, mw*0.5);
+    mg.addColorStop(0, `rgba(230,242,255,${t2*0.22})`);
+    mg.addColorStop(1, 'rgba(230,242,255,0)');
+    ctx.fillStyle = mg;
+    ctx.beginPath(); ctx.ellipse(mx2, my2, mw*0.5, mw*0.12, 0, 0, Math.PI*2); ctx.fill();
+  }
+}
+
+// Rain
+function updateRain(dt) {
+  if (!rainActive) { rainDrops = []; return; }
+  while (rainDrops.length < 120) {
+    rainDrops.push({
+      x: Math.random()*W, y: -10,
+      speed: 300 + Math.random()*200,
+      len: 8 + Math.random()*12,
+      alpha: 0.3 + Math.random()*0.4
+    });
+  }
+  rainDrops.forEach(d => { d.y += d.speed * dt; d.x += 20 * dt; });
+  rainDrops = rainDrops.filter(d => d.y < H + 20);
+}
+
+function drawRain(sky) {
+  if (!rainActive || rainDrops.length === 0) return;
+  const rc = sky.nightness > 0.5 ? 'rgba(150,180,220,' : 'rgba(180,210,240,';
+  ctx.lineWidth = 1;
+  rainDrops.forEach(d => {
+    ctx.strokeStyle = rc + d.alpha + ')';
+    ctx.globalAlpha = d.alpha;
+    ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x+5, d.y+d.len); ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
+}
+
+// ── Truck art border (improved, more ornate) ──────
+function drawTruckBorder() {
+  const bw = 18;
+
+  // Outer band
+  const obg = ctx.createLinearGradient(0, 0, W, 0);
+  truckBands.forEach((c, i) => obg.addColorStop(i/(truckBands.length-1), c));
+
+  // Top/bottom band
+  ctx.fillStyle = obg;
+  ctx.fillRect(0, 0, W, bw);
+  ctx.fillRect(0, H-bw, W, bw);
+  // Left/right band
+  const obgV = ctx.createLinearGradient(0, 0, 0, H);
+  truckBands.forEach((c,i) => obgV.addColorStop(i/(truckBands.length-1), c));
+  ctx.fillStyle = obgV;
+  ctx.fillRect(0, 0, bw, H);
+  ctx.fillRect(W-bw, 0, bw, H);
+
+  // Inner black line
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1;
+  ctx.strokeRect(bw, bw, W-bw*2, H-bw*2);
+
+  // Gold chain dots
+  ctx.fillStyle = '#ffd700';
+  const dotR = 2.5;
+  for (let i=0; i<=Math.floor(W/20); i++) {
+    const dx = bw*0.5 + i*20;
+    if (dx < W) {
+      ctx.beginPath(); ctx.arc(dx, bw*0.5, dotR, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(dx, H-bw*0.5, dotR, 0, Math.PI*2); ctx.fill();
+    }
+  }
+  for (let i=0; i<=Math.floor(H/20); i++) {
+    const dy = bw*0.5 + i*20;
+    if (dy < H) {
+      ctx.beginPath(); ctx.arc(bw*0.5, dy, dotR, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(W-bw*0.5, dy, dotR, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  // Corner rosettes (truck art flowers)
+  const corners = [[bw+1, bw+1], [W-bw-1, bw+1], [bw+1, H-bw-1], [W-bw-1, H-bw-1]];
+  corners.forEach(([cx, cy]) => {
+    // Outer petals
+    for (let p=0; p<8; p++) {
+      const angle = p*Math.PI/4;
+      ctx.fillStyle = truckBands[p%truckBands.length];
+      ctx.beginPath();
+      ctx.ellipse(cx+Math.cos(angle)*10, cy+Math.sin(angle)*10, 5, 9, angle, 0, Math.PI*2);
+      ctx.fill();
+    }
+    // Center disc
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI*2); ctx.fill();
+  });
+
+  // Floral midpoint ornaments
+  const mids = [[W*0.5, bw*0.5], [W*0.5, H-bw*0.5], [bw*0.5, H*0.5], [W-bw*0.5, H*0.5]];
+  mids.forEach(([mx, my]) => {
+    for (let p=0; p<6; p++) {
+      const angle = p*Math.PI/3;
+      ctx.fillStyle = truckBands[p%truckBands.length];
+      ctx.beginPath();
+      ctx.ellipse(mx+Math.cos(angle)*6, my+Math.sin(angle)*6, 3, 6, angle, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath(); ctx.arc(mx, my, 4, 0, Math.PI*2); ctx.fill();
+  });
+}
+
+// ── Ghazal overlay update ─────────────────────────
+let lastNight = 0;
+function updateGhazal(nightness) {
+  const el = document.getElementById('ghazal-overlay');
+  const textEl = document.getElementById('ghazal-text');
+  if (nightness > 0.7 && lastNight <= 0.7) {
+    textEl.textContent = ghazals[ghazalIdx % ghazals.length];
+    el.classList.add('visible');
+    ghazalIdx++;
+  } else if (nightness < 0.5 && lastNight >= 0.5) {
+    el.classList.remove('visible');
+  }
+  lastNight = nightness;
+}
+
+// ── Title color update ────────────────────────────
+function updateTitle(sky) {
+  const el = document.getElementById('nastaliq-title');
+  if (sky.nightness > 0.6) {
+    el.style.color = 'rgba(255, 220, 130, 0.85)';
+    el.style.textShadow = '0 2px 20px rgba(255,150,20,0.8), 0 0 60px rgba(255,100,0,0.4)';
+  } else if (sky.duskness > 0.4) {
+    el.style.color = 'rgba(255, 200, 100, 0.9)';
+    el.style.textShadow = '0 2px 18px rgba(255,120,20,0.6)';
+  } else {
+    el.style.color = 'rgba(255, 248, 220, 0.88)';
+    el.style.textShadow = '0 2px 18px rgba(255,200,80,0.4)';
+  }
+  document.getElementById('time-label').textContent = sky.urdu;
+}
+
+// ── Web Audio ambient sound ───────────────────────
+let audioNodes = {};
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  createAmbient();
+}
+
+function createAmbient() {
+  if (!audioCtx) return;
+
+  // River/stream noise
+  const bufSize = audioCtx.sampleRate * 2;
+  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i=0; i<bufSize; i++) data[i] = (Math.random()*2-1)*0.15;
+
+  const src = audioCtx.createBufferSource();
+  src.buffer = buf; src.loop = true;
+
+  // Filter for river sound
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass'; filter.frequency.value = 400; filter.Q.value = 0.5;
+
+  const gain = audioCtx.createGain();
+  gain.gain.value = soundOn ? 0.15 : 0;
+
+  src.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+  src.start();
+  audioNodes.river = { src, gain };
+
+  // Bird chirp oscillators
+  function chirp(delay) {
+    if (!soundOn || !audioCtx) return;
+    setTimeout(() => {
+      const osc = audioCtx.createOscillator();
+      const env = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(2400 + Math.random()*600, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(3200 + Math.random()*400, audioCtx.currentTime+0.08);
+      osc.frequency.exponentialRampToValueAtTime(2600, audioCtx.currentTime+0.18);
+      env.gain.setValueAtTime(0, audioCtx.currentTime);
+      env.gain.linearRampToValueAtTime(0.04, audioCtx.currentTime+0.02);
+      env.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.22);
+      osc.connect(env); env.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime+0.25);
+      if (soundOn) chirp(1500 + Math.random()*3000);
+    }, delay);
+  }
+  chirp(500); chirp(1200); chirp(2800);
+
+  // Wind hum
+  const wBuf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+  const wd = wBuf.getChannelData(0);
+  for (let i=0; i<bufSize; i++) wd[i] = (Math.random()*2-1)*0.08;
+  const wSrc = audioCtx.createBufferSource();
+  wSrc.buffer = wBuf; wSrc.loop = true;
+  const wFilter = audioCtx.createBiquadFilter();
+  wFilter.type = 'lowpass'; wFilter.frequency.value = 200;
+  const wGain = audioCtx.createGain();
+  wGain.gain.value = soundOn ? 0.08 : 0;
+  wSrc.connect(wFilter); wFilter.connect(wGain); wGain.connect(audioCtx.destination);
+  wSrc.start();
+  audioNodes.wind = { src: wSrc, gain: wGain };
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  document.getElementById('btn-sound').textContent = soundOn ? '♪ sound on' : '♪ sound off';
+  document.getElementById('btn-sound').classList.toggle('active', soundOn);
+  if (!audioCtx) { initAudio(); return; }
+  if (audioNodes.river) {
+    audioNodes.river.gain.gain.linearRampToValueAtTime(soundOn ? 0.15 : 0, audioCtx.currentTime+0.5);
+  }
+  if (audioNodes.wind) {
+    audioNodes.wind.gain.gain.linearRampToValueAtTime(soundOn ? 0.06 : 0, audioCtx.currentTime+0.5);
+  }
+}
+
+// ── Click to bloom flowers ─────────────────────────
+canvas.addEventListener('click', (e) => {
+  const mx = e.clientX, my = e.clientY;
+  let bloomed = false;
+  flowerDefs.forEach(f => {
+    const fx = f.x*W, fy = f.y*H;
+    const dist = Math.sqrt((mx-fx)**2 + (my-fy)**2);
+    if (dist < 28) {
+      f.bloomed = 1.0;
+      bloomed = true;
+      spawnBloomBurst(mx, my);
+      if (soundOn && audioCtx) {
+        const osc = audioCtx.createOscillator();
+        const eg = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime+0.15);
+        eg.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        eg.gain.linearRampToValueAtTime(0, audioCtx.currentTime+0.3);
+        osc.connect(eg); eg.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime+0.35);
+      }
+    }
+  });
+});
+
+function spawnBloomBurst(x, y) {
+  const emojis = ['🌸','✿','🌺','❀','🌼'];
+  for (let i=0; i<4; i++) {
+    const el = document.createElement('div');
+    el.className = 'bloom-burst';
+    el.style.left = (x - 9 + (Math.random()-0.5)*30) + 'px';
+    el.style.top  = (y - 9 + (Math.random()-0.5)*20) + 'px';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1300);
+  }
+}
+
+// ── UI buttons ─────────────────────────────────────
+document.getElementById('btn-speed').addEventListener('click', () => {
+  speedIdx = (speedIdx+1) % SPEEDS.length;
+  const labels = ['× slow', '× med', '× fast'];
+  document.getElementById('btn-speed').textContent = labels[speedIdx];
+  document.getElementById('btn-speed').classList.toggle('active', speedIdx === 0);
+});
+
+document.getElementById('btn-sound').addEventListener('click', toggleSound);
+
+document.getElementById('btn-rain').addEventListener('click', () => {
+  rainActive = !rainActive;
+  document.getElementById('btn-rain').classList.toggle('active', rainActive);
+  document.getElementById('btn-rain').textContent = rainActive ? '☁ raining' : '☁ rain';
+});
+
+document.getElementById('btn-wind').addEventListener('click', () => {
+  breezeActive = !breezeActive;
+  document.getElementById('btn-wind').classList.toggle('active', breezeActive);
+  document.getElementById('btn-wind').textContent = breezeActive ? '~ breezy' : '~ breeze';
+});
+
+// ═══ MAIN LOOP ════════════════════════════════════
+let last = null;
+function animate(ts) {
+  if (!last) last = ts;
+  const dt = Math.min((ts - last) / 1000, 0.05);
+  last = ts;
+  frame++;
+
+  t = (t + dt * SPEEDS[speedIdx]) % 1;
+  flowerSway += dt * (breezeActive ? 2.8 : 1.2);
+  radioWave  += dt * 2.5;
+  starTwinkle += dt * 1.4;
+  waterShimmer += dt * 1.7;
+  leafSway   += dt * (breezeActive ? 1.8 : 0.75);
+  smokePuff  = (smokePuff + dt*0.15) % 1;
+  cloudOffset += dt * (breezeActive ? 18 : 6);
+  birdT = birdT.map((bt,i) => (bt + dt*(0.038+i*0.007)) % 1.1);
+  fireflyT = fireflyT.map((ft,i) => (ft + dt*(0.14+i*0.025)) % 1);
+
+  updateRain(dt);
+
+  const sky = getSky(t);
+  updateGhazal(sky.nightness);
+  updateTitle(sky);
+
+  // Draw layers
+  drawSky(sky);
+  drawSun(t);
+  drawMoon(t);
+  drawStars(t);
+  drawClouds(sky);
+  drawMountains(sky);
+  drawSnowCaps(sky);
+  drawValley(sky);
+  drawMudWall(sky);
+  drawTrees(sky);
+  drawRiver(sky);
+  drawBridge(sky);
+  drawField(sky);
+  drawHut(sky);
+  drawFlowers(sky, dt);
+  drawMan(sky);
+  drawRadio(sky);
+  drawBirds(sky);
+  drawFireflies(sky);
+  drawMist(sky);
+  drawLantern(sky);
+  drawRain(sky);
+  drawTruckBorder();
+
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
