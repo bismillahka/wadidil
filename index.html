@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wadi-e-Dil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  --gold:#d7b37a;
+  --gold2:#f2d29f;
+  --glass:rgba(18,15,12,.45);
+  --border:rgba(255,255,255,.08);
+}
+
+html, body{
+  width:100%; height:100%;
+  overflow:hidden;
+  font-family:'Cinzel', serif;
+  color:white;
+}
+
+body{
+  position:relative;
+  animation:fadeIn 1.2s ease;
+}
+
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+
+/* BACKGROUND */
+.background{
+  position:fixed; inset:0;
+  background-image:url("background.png");
+  background-size:cover;
+  background-position:center;
+  z-index:-5;
+  transition:background-image 1.2s ease;
+}
+.background::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(to bottom,rgba(0,0,0,.05),rgba(0,0,0,.12),rgba(0,0,0,.42));
+}
+
+/* APP */
+.app{ position:relative; width:100%; height:100vh; }
+
+/* GLASS */
+.glass{
+  background:rgba(15,15,12,.38);
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+/* CLOCK */
+.clock-card{
+  position:absolute; top:18px; left:18px;
+  width:130px; padding:6px;
+  border-radius:22px; text-align:center; z-index:100;
+}
+.clock-greeting{ font-family:'Noto Nastaliq Urdu',serif; font-size:18px; color:var(--gold2); }
+.clock-time{ font-size:18px; margin-top:8px; }
+.clock-date{ font-size:11px; margin-top:8px; color:#ddd; }
+
+/* WEATHER */
+.weather-card{
+  position:absolute; top:18px; right:18px;
+  width:140px; padding:6px;
+  border-radius:22px; text-align:center; z-index:100;
+}
+.weather-temp{ font-size:18px; }
+.weather-city{ margin-top:5px; color:var(--gold2); }
+.weather-desc{ margin-top:6px; font-size:14px; opacity:.85; }
+.weather-icon{ font-size:30px; margin-bottom:8px; }
+
+/* TITLE */
+.hero{
+  position:absolute; top:25px; left:50%;
+  transform:translateX(-50%);
+  text-align:center; z-index:50;
+}
+.hero::before{
+  content:""; position:absolute;
+  width:260px; height:260px;
+  left:50%; top:45%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,210,120,.18),transparent 70%);
+  animation:lanternGlow 4s ease-in-out infinite;
+}
+@keyframes lanternGlow{
+  0%,100%{ opacity:.5; transform:translate(-50%,-50%) scale(1); }
+  50%{ opacity:1; transform:translate(-50%,-50%) scale(1.15); }
+}
+.hero-urdu{
+  position:relative;
+  font-family:'Noto Nastaliq Urdu',serif;
+  font-size:78px; color:#f7e2bb;
+  text-shadow:0 5px 20px rgba(0,0,0,.5);
+}
+.hero-eng{
+  position:relative; letter-spacing:4px;
+  margin-top:10px; font-size:18px; color:#e7d5b5;
+}
+
+/* RADIO PANEL */
+.radio-panel{
+  position:absolute; left:20px; top:110px;
+  width:370px; z-index:60;
+}
+.radio-bg{
+  width:100%; display:block;
+  user-select:none; pointer-events:none;
+  filter:drop-shadow(0 15px 30px rgba(0,0,0,.45));
+}
+.radio-overlay{ position:absolute; inset:0; }
+
+/* SONG INFO */
+.song-title{
+  position:absolute; left:65px; right:65px; top:345px;
+  font-size:18px; color:#f8e7c7;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  text-align:center; cursor:pointer;
+  transition:.2s;
+}
+.song-title:hover{ color:var(--gold2); text-shadow:0 0 10px rgba(255,210,120,.5); }
+
+.song-artist{
+  position:absolute; left:65px; right:65px; top:372px;
+  font-size:14px; text-align:center; color:#d6b98d;
+  cursor:pointer; transition:.2s;
+}
+.song-artist:hover{ color:var(--gold2); }
+
+/* VISUALIZER */
+.visualizer{
+  position:absolute; left:50%; top:150px;
+  transform:translateX(-50%);
+  height:55px; display:flex; align-items:flex-end; gap:4px;
+}
+.visualizer span{
+  width:6px; height:20px; border-radius:999px;
+  background:#d7b37a;
+  animation:equalizer 1s infinite;
+}
+.visualizer span:nth-child(2){ animation-delay:.1s; }
+.visualizer span:nth-child(3){ animation-delay:.2s; }
+.visualizer span:nth-child(4){ animation-delay:.3s; }
+.visualizer span:nth-child(5){ animation-delay:.4s; }
+.visualizer span:nth-child(6){ animation-delay:.5s; }
+.visualizer span:nth-child(7){ animation-delay:.6s; }
+.visualizer span:nth-child(8){ animation-delay:.7s; }
+
+@keyframes equalizer{
+  0%,100%{ height:10px; }
+  50%{ height:50px; }
+}
+.visualizer.paused span{ animation-play-state:paused; }
+
+/* TUNER */
+.dial-track{
+  position:absolute; left:52px; right:52px; top:235px; height:30px;
+}
+.dial-line{
+  position:absolute; top:14px; left:0; right:0;
+  height:2px; background:rgba(255,220,150,.4);
+}
+.dial-needle{
+  position:absolute; top:-5px; left:0;
+  width:3px; height:24px;
+  background:white; box-shadow:0 0 10px gold;
+  transition:.5s ease;
+}
+
+/* PROGRESS BAR */
+.progress-wrapper{
+  position:absolute; left:55px; right:55px; top:410px;
+  height:10px;
+  background:rgba(255,255,255,.12);
+  border-radius:999px;
+  cursor:pointer;
+  z-index:10;
+}
+.progress{
+  width:0%; height:100%;
+  background:linear-gradient(90deg,#b88746,#f6d39f);
+  border-radius:999px;
+  pointer-events:none;
+}
+
+/* SONG TIME */
+.song-time{
+  position:absolute; left:55px; right:55px; top:425px;
+  display:flex; justify-content:space-between;
+  font-size:12px; color:#d7b37a;
+}
+
+/* CONTROLS */
+.controls{
+  position:absolute; left:50%; top:450px;
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:18px;
+}
+.btn{
+  border:none; cursor:pointer; color:white;
+  background:rgba(255,255,255,.12);
+  transition:.25s;
+}
+.btn:hover{ transform:scale(1.08); }
+.small-btn{ width:52px; height:52px; border-radius:50%; font-size:18px; }
+.play-btn{
+  width:76px; height:76px; border-radius:50%; font-size:26px;
+  background:radial-gradient(circle,rgba(215,179,122,.95),rgba(125,80,25,.95));
+}
+
+/* FX BUTTON - on the radio panel */
+.fx-btn{
+  position:absolute; right:18px; top:300px;
+  width:40px; height:40px; border-radius:50%;
+  border:1px solid rgba(215,179,122,.5);
+  background:rgba(215,179,122,.15);
+  color:var(--gold2); font-size:18px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:.25s; z-index:20;
+}
+.fx-btn:hover{ background:rgba(215,179,122,.3); transform:scale(1.08); }
+
+/* STATUS */
+.footer-status{
+  position:absolute; left:55px; right:55px; bottom:35px;
+  display:flex; justify-content:space-between;
+  font-size:13px; color:#d7b37a;
+}
+
+/* DOCK */
+.bottom-dock{
+  position:absolute; left:50%; bottom:20px;
+  transform:translateX(-50%);
+  width:40%; height:80px; border-radius:45px;
+  display:flex; justify-content:space-evenly; align-items:center;
+  z-index:100;
+}
+.dock-item{
+  display:flex; flex-direction:column; align-items:center;
+  gap:6px; cursor:pointer; color:#e6c898; transition:.25s;
+}
+.dock-item:hover{ transform:translateY(-4px); }
+.dock-icon{ font-size:28px; }
+.dock-item.active{
+  color:#ffe4b5;
+  text-shadow:0 0 15px rgba(255,220,150,.7);
+  transform:translateY(-4px);
+}
+
+/* RAIN */
+.rain-overlay{
+  position:fixed; inset:0; pointer-events:none;
+  opacity:0; transition:.5s; z-index:15;
+  background-image:repeating-linear-gradient(
+    120deg, transparent 0px, transparent 18px,
+    rgba(255,255,255,.05) 19px, rgba(255,255,255,.05) 20px
+  );
+  animation:rainMove .4s linear infinite;
+}
+.rain-active{ opacity:1; }
+@keyframes rainMove{
+  from{ background-position:0 0; }
+  to{ background-position:-100px 300px; }
+}
+
+/* FIREFLIES */
+.firefly{
+  position:fixed; width:6px; height:6px; border-radius:50%;
+  background:#ffe9a7; box-shadow:0 0 15px #ffe9a7;
+  animation:floatFly 10s linear infinite;
+  pointer-events:none; z-index:10;
+}
+@keyframes floatFly{
+  0%{ transform:translateY(0); }
+  50%{ transform:translateY(-80px); }
+  100%{ transform:translateY(0); }
+}
+
+/* ===== FX POPUP ===== */
+.fx-popup{
+  position:fixed; inset:0; z-index:200;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(6px);
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease;
+}
+.fx-popup.open{ opacity:1; pointer-events:all; }
+.fx-popup-box{
+  background:rgba(20,14,8,.88);
+  border:1px solid rgba(215,179,122,.3);
+  border-radius:28px;
+  padding:32px 36px;
+  width:340px;
+  box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 40px rgba(215,179,122,.08);
+}
+.fx-popup-title{
+  font-family:'Cinzel',serif;
+  font-size:16px; letter-spacing:3px;
+  color:var(--gold2); text-align:center;
+  margin-bottom:6px;
+}
+.fx-popup-sub{
+  font-family:'Noto Nastaliq Urdu',serif;
+  font-size:14px; color:#a8896a;
+  text-align:center; margin-bottom:24px;
+}
+.fx-row{
+  display:flex; align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px; gap:12px;
+}
+.fx-label{
+  font-size:12px; letter-spacing:2px;
+  color:var(--gold); min-width:80px;
+}
+.fx-slider{
+  -webkit-appearance:none; appearance:none;
+  flex:1; height:4px; border-radius:999px;
+  background:rgba(255,255,255,.15);
+  outline:none; cursor:pointer;
+}
+.fx-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px; height:16px;
+  border-radius:50%; cursor:pointer;
+  background:radial-gradient(circle,#f6d39f,#b88746);
+  box-shadow:0 0 8px rgba(215,179,122,.5);
+}
+.fx-val{
+  font-size:12px; color:#d7b37a;
+  min-width:32px; text-align:right;
+}
+.fx-toggle-row{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:20px;
+}
+.fx-toggle-label{ font-size:12px; letter-spacing:2px; color:var(--gold); }
+.fx-toggle{
+  position:relative; width:46px; height:24px;
+  background:rgba(255,255,255,.12);
+  border-radius:999px; cursor:pointer;
+  border:1px solid rgba(215,179,122,.2);
+  transition:.3s;
+}
+.fx-toggle.on{ background:rgba(215,179,122,.4); }
+.fx-toggle::after{
+  content:""; position:absolute;
+  top:3px; left:3px;
+  width:18px; height:18px;
+  border-radius:50%;
+  background:#d7b37a;
+  transition:.3s;
+}
+.fx-toggle.on::after{ left:25px; }
+.fx-close{
+  margin-top:12px; width:100%; padding:12px;
+  border:1px solid rgba(215,179,122,.3);
+  border-radius:14px;
+  background:rgba(215,179,122,.1);
+  color:var(--gold2); font-family:'Cinzel',serif;
+  font-size:13px; letter-spacing:2px;
+  cursor:pointer; transition:.25s;
+}
+.fx-close:hover{ background:rgba(215,179,122,.2); }
+
+/* ===== SEARCH POPUP ===== */
+.search-popup{
+  position:fixed; inset:0; z-index:200;
+  display:flex; align-items:flex-start; justify-content:center;
+  padding-top:80px;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease;
+}
+.search-popup.open{ opacity:1; pointer-events:all; }
+.search-box{
+  background:rgba(20,14,8,.92);
+  border:1px solid rgba(215,179,122,.3);
+  border-radius:24px;
+  width:420px; max-height:70vh;
+  overflow:hidden;
+  display:flex; flex-direction:column;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+}
+.search-header{
+  padding:20px 20px 0;
+}
+.search-input-wrap{
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(215,179,122,.2);
+  border-radius:14px; padding:10px 14px;
+}
+.search-input-wrap span{ color:var(--gold); font-size:18px; }
+.search-input{
+  flex:1; background:none; border:none; outline:none;
+  color:white; font-family:'Cinzel',serif; font-size:14px;
+}
+.search-input::placeholder{ color:rgba(215,179,122,.4); }
+.search-close-btn{
+  background:none; border:none; color:#a8896a;
+  font-size:22px; cursor:pointer; padding:0 4px;
+  line-height:1;
+}
+.search-results{
+  overflow-y:auto; padding:12px;
+  flex:1;
+}
+.search-result-item{
+  display:flex; align-items:center;
+  gap:14px; padding:12px 10px;
+  border-radius:12px; cursor:pointer;
+  transition:.2s;
+}
+.search-result-item:hover{
+  background:rgba(215,179,122,.1);
+}
+.search-result-item.playing{
+  background:rgba(215,179,122,.18);
+}
+.search-num{
+  font-size:12px; color:#a8896a;
+  min-width:24px; text-align:right;
+}
+.search-info{ flex:1; min-width:0; }
+.search-song{ font-size:14px; color:#f8e7c7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.search-artist{ font-size:12px; color:#a8896a; margin-top:2px; }
+.search-play-icon{ font-size:16px; color:var(--gold); opacity:0; transition:.2s; }
+.search-result-item:hover .search-play-icon{ opacity:1; }
+.search-result-item.playing .search-play-icon{ opacity:1; color:var(--gold2); }
+.search-empty{ padding:40px; text-align:center; color:#a8896a; font-size:14px; }
+
+/* POETRY */
+.poetry-box{
+  position:absolute; right:24px; bottom:120px;
+  width:340px; padding:18px 22px;
+  border-radius:22px; text-align:right; z-index:60;
+}
+.poetry{
+  font-family:'Noto Nastaliq Urdu',serif;
+  font-size:24px; line-height:2; color:#f5e3c0;
+}
+.poet{ margin-top:10px; color:var(--gold); font-size:14px; }
+
+/* RESPONSIVE */
+@media(max-width:1366px){
+  .radio-panel{ transform:scale(.82); transform-origin:left top; }
+  .hero-urdu{ font-size:66px; }
+  .poetry-box{ width:300px; }
+}
+@media(min-width:1280px) and (max-width:1366px){
+  .radio-panel{ left:5px; transform:scale(.75); transform-origin:left top; }
+  .hero{ top:10px; }
+  .hero-urdu{ font-size:60px; }
+  .poetry-box{ bottom:115px; width:280px; }
+}
+@media(max-width:768px){
+  .radio-panel{ left:50%; top:120px; transform:translateX(-50%) scale(.82); }
+  .hero{ top:10px; }
+  .hero-urdu{ font-size:46px; }
+  .hero-eng{ font-size:13px; }
+  .poetry-box{ width:92%; bottom:110px; right:4%; }
+  .bottom-dock{ width:96%; height:80px; }
+  .search-box{ width:95%; }
+}
+</style>
+</head>
+<body>
+
+<div class="background" id="bg"></div>
+<div class="app">
+
+  <!-- CLOCK -->
+  <div class="clock-card glass">
+    <div class="clock-greeting" id="greeting">صبح</div>
+    <div class="clock-time" id="clock">--:--</div>
+    <div class="clock-date" id="clockDate">Lahore, Pakistan</div>
+  </div>
+
+  <!-- WEATHER -->
+  <div class="weather-card glass">
+    <div class="weather-icon" id="weatherIcon">☀️</div>
+    <div class="weather-temp" id="temp">--°C</div>
+    <div class="weather-city">Lahore</div>
+    <div class="weather-desc" id="weatherDesc">Loading…</div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="hero" id="hero">
+    <div class="hero-urdu">وادیِ دل</div>
+    <div class="hero-eng">WADI-E-DIL · VALLEY OF THE HEART</div>
+  </div>
+
+  <!-- RADIO -->
+  <div class="radio-panel">
+    <img src="radio.png" class="radio-bg" alt="radio">
+    <div class="radio-overlay">
+
+      <!-- FX button -->
+      <button class="fx-btn" id="fxBtn" title="Sound FX">🎛</button>
+
+      <div class="visualizer" id="visualizer">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="dial-track">
+        <div class="dial-line"></div>
+        <div class="dial-needle" id="dialNeedle"></div>
+      </div>
+
+      <div class="song-title" id="songTitle" title="Search songs">Song One</div>
+      <div class="song-artist" id="songArtist" title="Search songs">Artist One</div>
+
+      <div class="progress-wrapper" id="progressWrapper">
+        <div class="progress" id="progressBar"></div>
+      </div>
+
+      <div class="song-time">
+        <span id="currentTime">0:00</span>
+        <span id="totalTime">0:00</span>
+      </div>
+
+      <div class="controls">
+        <button class="btn small-btn" id="prevBtn">⏮</button>
+        <button class="btn play-btn" id="playBtn">▶</button>
+        <button class="btn small-btn" id="nextBtn">⏭</button>
+      </div>
+
+      <div class="footer-status">
+        <span id="liveLabel">● LIVE</span>
+        <span>WADI-E-DIL</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- POETRY -->
+  <div class="poetry-box glass">
+    <div class="poetry" id="poetryText">پتہ پتہ بوٹا بوٹا حال ہمارا جانے ہے</div>
+    <div class="poet" id="poetName">— میر تقی میر</div>
+  </div>
+
+  <!-- DOCK -->
+  <div class="bottom-dock glass">
+    <div class="dock-item" id="sceneBtn"><div class="dock-icon">🖼</div><div>SCENE</div></div>
+    <div class="dock-item" id="breezeBtn"><div class="dock-icon">🍃</div><div>BREEZE</div></div>
+    <div class="dock-item" id="rainBtn"><div class="dock-icon">🌧</div><div>RAIN</div></div>
+    <div class="dock-item" id="fullscreenBtn"><div class="dock-icon">⛶</div><div>FULLSCREEN</div></div>
+  </div>
+</div>
+
+<!-- AUDIO ELEMENTS -->
+<audio id="audio"></audio>
+<audio id="rainAudio" loop><source src="rain.mp3" type="audio/mpeg"></audio>
+<audio id="breezeAudio" loop><source src="breeze.mp3" type="audio/mpeg"></audio>
+
+<!-- RAIN OVERLAY -->
+<div class="rain-overlay" id="rainOverlay"></div>
+
+<!-- FIREFLIES -->
+<div class="firefly" style="left:10%;top:75%;animation-delay:0s"></div>
+<div class="firefly" style="left:22%;top:60%;animation-delay:2s"></div>
+<div class="firefly" style="left:40%;top:80%;animation-delay:4s"></div>
+<div class="firefly" style="left:62%;top:68%;animation-delay:6s"></div>
+<div class="firefly" style="left:80%;top:72%;animation-delay:1s"></div>
+<div class="firefly" style="left:90%;top:58%;animation-delay:3s"></div>
+
+<!-- FX POPUP -->
+<div class="fx-popup" id="fxPopup">
+  <div class="fx-popup-box">
+    <div class="fx-popup-title">SOUND STUDIO</div>
+    <div class="fx-popup-sub">آواز کی دنیا</div>
+
+    <div class="fx-row">
+      <span class="fx-label">BASS</span>
+      <input class="fx-slider" id="bassSlider" type="range" min="0" max="20" value="0" step="1">
+      <span class="fx-val" id="bassVal">0</span>
+    </div>
+    <div class="fx-row">
+      <span class="fx-label">REVERB</span>
+      <input class="fx-slider" id="reverbSlider" type="range" min="0" max="100" value="0" step="1">
+      <span class="fx-val" id="reverbVal">0</span>
+    </div>
+    <div class="fx-row">
+      <span class="fx-label">TREBLE</span>
+      <input class="fx-slider" id="trebleSlider" type="range" min="-10" max="10" value="0" step="1">
+      <span class="fx-val" id="trebleVal">0</span>
+    </div>
+
+    <div class="fx-toggle-row">
+      <span class="fx-toggle-label">LO-FI MODE</span>
+      <div class="fx-toggle" id="lofiToggle"></div>
+    </div>
+    <div class="fx-toggle-row">
+      <span class="fx-toggle-label">VINYL CRACKLE</span>
+      <div class="fx-toggle" id="vinylToggle"></div>
+    </div>
+
+    <button class="fx-close" id="fxClose">CLOSE · بند کریں</button>
+  </div>
+</div>
+
+<!-- SEARCH POPUP -->
+<div class="search-popup" id="searchPopup">
+  <div class="search-box">
+    <div class="search-header">
+      <div class="search-input-wrap">
+        <span>🔍</span>
+        <input class="search-input" id="searchInput" placeholder="Search songs or artists…" autocomplete="off">
+        <button class="search-close-btn" id="searchClose">✕</button>
+      </div>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<script>
+/* ==========================================
+  WEB AUDIO CONTEXT + FX CHAIN
+========================================== */
+let audioCtx = null;
+let sourceNode = null;
+let bassFilter = null;
+let trebleFilter = null;
+let reverbNode = null;
+let reverbGain = null;
+let dryGain = null;
+let lofiFilter = null;
+let lofiActive = false;
+let vinylBuffer = null;
+let vinylSource = null;
+let vinylGain = null;
+let vinylActive = false;
+let mediaSource = null;
+
+function initAudioContext(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  mediaSource = audioCtx.createMediaElementSource(audio);
+
+  // Bass boost filter
+  bassFilter = audioCtx.createBiquadFilter();
+  bassFilter.type = 'lowshelf';
+  bassFilter.frequency.value = 200;
+  bassFilter.gain.value = 0;
+
+  // Treble filter
+  trebleFilter = audioCtx.createBiquadFilter();
+  trebleFilter.type = 'highshelf';
+  trebleFilter.frequency.value = 3500;
+  trebleFilter.gain.value = 0;
+
+  // Lo-fi lowpass
+  lofiFilter = audioCtx.createBiquadFilter();
+  lofiFilter.type = 'lowpass';
+  lofiFilter.frequency.value = 20000; // off by default
+
+  // Reverb
+  reverbNode = audioCtx.createConvolver();
+  createReverb(1.5);
+
+  reverbGain = audioCtx.createGain();
+  reverbGain.gain.value = 0;
+
+  dryGain = audioCtx.createGain();
+  dryGain.gain.value = 1;
+
+  // Vinyl crackle
+  vinylGain = audioCtx.createGain();
+  vinylGain.gain.value = 0;
+  createVinylNoise();
+
+  // Chain: source → bass → treble → lofi → dry/reverb split → destination
+  mediaSource.connect(bassFilter);
+  bassFilter.connect(trebleFilter);
+  trebleFilter.connect(lofiFilter);
+  lofiFilter.connect(dryGain);
+  lofiFilter.connect(reverbNode);
+  reverbNode.connect(reverbGain);
+  dryGain.connect(audioCtx.destination);
+  reverbGain.connect(audioCtx.destination);
+  vinylGain.connect(audioCtx.destination);
+}
+
+function createReverb(duration){
+  const sampleRate = audioCtx.sampleRate;
+  const length = sampleRate * duration;
+  const impulse = audioCtx.createBuffer(2, length, sampleRate);
+  for(let c=0; c<2; c++){
+    const ch = impulse.getChannelData(c);
+    for(let i=0; i<length; i++){
+      ch[i] = (Math.random()*2-1) * Math.pow(1 - i/length, 3);
+    }
+  }
+  reverbNode.buffer = impulse;
+}
+
+function createVinylNoise(){
+  const bufLen = audioCtx.sampleRate * 2;
+  vinylBuffer = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+  const data = vinylBuffer.getChannelData(0);
+  for(let i=0; i<bufLen; i++){
+    data[i] = Math.random() < 0.001 ? (Math.random()*2-1)*0.8 : (Math.random()*2-1)*0.01;
+  }
+}
+
+function startVinyl(){
+  if(!audioCtx) return;
+  vinylSource = audioCtx.createBufferSource();
+  vinylSource.buffer = vinylBuffer;
+  vinylSource.loop = true;
+  vinylSource.connect(vinylGain);
+  vinylSource.start();
+  vinylGain.gain.value = 0.06;
+}
+function stopVinyl(){
+  if(vinylSource){ vinylSource.stop(); vinylSource = null; }
+  if(vinylGain) vinylGain.gain.value = 0;
+}
+
+/* ==========================================
+  PLAYLIST — reads MP3 ID3 tags via FileReader
+  Falls back to filename-based names
+========================================== */
+let playlist = [];
+
+fetch('songs.json')
+  .then(r => r.json())
+  .then(data => {
+    playlist = data.map(s => ({
+      src: s.file,
+      title: s.title,
+      artist: s.artist
+    }));
+    loadSong(0, false);
+  });
+
+// We'll try to read ID3 tags only for loaded songs using a lightweight approach
+function parseID3Tags(file, index){
+  return new Promise(resolve=>{
+    const fr = new FileReader();
+    fr.onload = function(e){
+      try{
+        const buf = e.target.result;
+        const view = new Uint8Array(buf);
+        // Check for ID3v2 header
+        if(view[0]===73 && view[1]===68 && view[2]===51){
+          let offset = 10;
+          while(offset < Math.min(buf.byteLength, 4096)){
+            const frameId = String.fromCharCode(view[offset],view[offset+1],view[offset+2],view[offset+3]);
+            const frameSize = (view[offset+4]<<24)|(view[offset+5]<<16)|(view[offset+6]<<8)|view[offset+7];
+            if(frameSize<=0) break;
+            const encoding = view[offset+10];
+            let text = '';
+            if(encoding===0 || encoding===3){
+              for(let j=offset+11; j<offset+10+frameSize; j++){
+                if(view[j]===0) break;
+                text += String.fromCharCode(view[j]);
+              }
+            } else if(encoding===1||encoding===2){
+              // UTF-16
+              for(let j=offset+11; j<offset+10+frameSize-1; j+=2){
+                const code = view[j]|(view[j+1]<<8);
+                if(code===0) break;
+                text += String.fromCharCode(code);
+              }
+            }
+            text = text.replace(/[^\x20-\x7E\u0600-\u06FF]/g,'').trim();
+            if(frameId==='TIT2' && text) playlist[index].title = text;
+            if(frameId==='TPE1' && text) playlist[index].artist = text;
+            offset += 10 + frameSize;
+          }
+        }
+        resolve();
+      } catch(err){ resolve(); }
+    };
+    fr.onerror = ()=> resolve();
+    fr.readAsArrayBuffer(file.slice(0, 4096));
+  });
+}
+
+/* ==========================================
+  ELEMENTS
+========================================== */
+const audio = document.getElementById('audio');
+const playBtn = document.getElementById('playBtn');
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+const progressBar = document.getElementById('progressBar');
+const progressWrapper = document.getElementById('progressWrapper');
+const songTitle = document.getElementById('songTitle');
+const songArtist = document.getElementById('songArtist');
+const dialNeedle = document.getElementById('dialNeedle');
+const visualizer = document.getElementById('visualizer');
+
+let currentSong = 0;
+let isPlaying = false;
+let isScrubbing = false;
+
+/* ==========================================
+  LOAD SONG
+========================================== */
+function loadSong(index, andPlay){
+  currentSong = index;
+  audio.src = playlist[index].src;
+  songTitle.textContent = playlist[index].title;
+  songArtist.textContent = playlist[index].artist;
+  dialNeedle.style.left = `${(index / (playlist.length-1))*100}%`;
+  liveLabel.textContent = '● LIVE';
+  updateSearchHighlight();
+  if(andPlay) audio.play().catch(()=>{});
+}
+
+function liveLabel_ref(){ return document.getElementById('liveLabel'); }
+const liveLabel = document.getElementById('liveLabel');
+
+/* ==========================================
+  PLAY / PAUSE
+========================================== */
+function playSong(){
+  initAudioContext();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  audio.play().then(()=>{
+    isPlaying = true;
+    playBtn.innerHTML = '❚❚';
+    visualizer.classList.remove('paused');
+  }).catch(err=>{ console.warn(err); });
+}
+function pauseSong(){
+  audio.pause();
+  isPlaying = false;
+  playBtn.innerHTML = '▶';
+  visualizer.classList.add('paused');
+}
+playBtn.addEventListener('click', ()=>{ isPlaying ? pauseSong() : playSong(); });
+
+/* ==========================================
+  NEXT / PREV / AUTO-NEXT
+========================================== */
+nextBtn.addEventListener('click', ()=>{
+  currentSong = (currentSong+1) % playlist.length;
+  loadSong(currentSong, true);
+});
+prevBtn.addEventListener('click', ()=>{
+  if(audio.currentTime > 3){ audio.currentTime=0; return; }
+  currentSong = (currentSong-1+playlist.length) % playlist.length;
+  loadSong(currentSong, true);
+});
+audio.addEventListener('ended', ()=>{
+  currentSong = (currentSong+1) % playlist.length;
+  loadSong(currentSong, true);
+});
+
+/* ==========================================
+  PROGRESS BAR — scrubbing (fixed)
+========================================== */
+function scrubTo(e){
+  const rect = progressWrapper.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  let pct = (clientX - rect.left) / rect.width;
+  pct = Math.max(0, Math.min(1, pct));
+  if(audio.duration){
+    audio.currentTime = pct * audio.duration;
+    progressBar.style.width = (pct*100) + '%';
+  }
+}
+
+progressWrapper.addEventListener('mousedown', e=>{ isScrubbing=true; scrubTo(e); });
+progressWrapper.addEventListener('touchstart', e=>{ isScrubbing=true; scrubTo(e); }, {passive:true});
+document.addEventListener('mousemove', e=>{ if(isScrubbing) scrubTo(e); });
+document.addEventListener('touchmove', e=>{ if(isScrubbing) scrubTo(e); }, {passive:true});
+document.addEventListener('mouseup', ()=>{ isScrubbing=false; });
+document.addEventListener('touchend', ()=>{ isScrubbing=false; });
+
+/* ==========================================
+  TIME UPDATE
+========================================== */
+audio.addEventListener('timeupdate', ()=>{
+  if(!isScrubbing && audio.duration){
+    const pct = audio.currentTime / audio.duration;
+    progressBar.style.width = (pct*100) + '%';
+    document.getElementById('currentTime').textContent = fmt(audio.currentTime);
+    document.getElementById('totalTime').textContent = fmt(audio.duration);
+  }
+});
+
+function fmt(s){
+  const m = Math.floor(s/60);
+  const sec = Math.floor(s%60);
+  return m + ':' + String(sec).padStart(2,'0');
+}
+
+/* ==========================================
+  CLOCK
+========================================== */
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('clockDate').textContent =
+    now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const h = now.getHours();
+  const greetings = ['رات','رات','رات','رات','رات','صبح','صبح','صبح','صبح','صبح','صبح','صبح','دوپہر','دوپہر','دوپہر','دوپہر','دوپہر','شام','شام','شام','رات','رات','رات','رات'];
+  document.getElementById('greeting').textContent = greetings[h];
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ==========================================
+  WEATHER
+========================================== */
+async function getWeather(){
+  try{
+    const r = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Lahore,PK&units=metric&appid=dd418d9de42f23c740325f5265c2b44c');
+    const d = await r.json();
+    document.getElementById('temp').textContent = Math.round(d.main.temp)+'°C';
+    const cond = d.weather[0].main;
+    document.getElementById('weatherDesc').textContent = cond;
+    const icon = document.getElementById('weatherIcon');
+    if(cond.includes('Rain')) icon.textContent='🌧';
+    else if(cond.includes('Cloud')) icon.textContent='☁️';
+    else if(cond.includes('Snow')) icon.textContent='❄️';
+    else icon.textContent='☀️';
+  }catch(e){ document.getElementById('weatherDesc').textContent='Clear'; }
+}
+getWeather();
+
+/* ==========================================
+  POETRY ROTATION
+========================================== */
+const poetryData = [
+  { poetry:'پتہ پتہ بوٹا بوٹا حال ہمارا جانے ہے', poet:'میر تقی میر' },
+  { poetry:'ہزاروں خواہشیں ایسی کہ ہر خواہش پہ دم نکلے', poet:'مرزا غالب' },
+  { poetry:'دل ناداں تجھے ہوا کیا ہے', poet:'مرزا غالب' },
+  { poetry:'رنجش ہی سہی دل ہی دکھانے کے لیے آ', poet:'احمد فراز' },
+  { poetry:'اب کے ہم بچھڑے تو شاید کبھی خوابوں میں ملیں', poet:'احمد فراز' },
+  { poetry:'کوئی امید بر نہیں آتی، کوئی صورت نظر نہیں آتی', poet:'مرزا غالب' },
+  { poetry:'تیرے وعدے پر جیے ہم تو یہ جان جھوٹ جانا', poet:'مرزا غالب' },
+];
+let poetryIndex = 0;
+function rotatePoetry(){
+  poetryIndex = (poetryIndex+1) % poetryData.length;
+  const p = document.getElementById('poetryText');
+  const a = document.getElementById('poetName');
+  p.style.opacity=0;
+  a.style.opacity=0;
+  setTimeout(()=>{
+    p.textContent = poetryData[poetryIndex].poetry;
+    a.textContent = '— ' + poetryData[poetryIndex].poet;
+    p.style.transition='opacity .8s'; p.style.opacity=1;
+    a.style.transition='opacity .8s'; a.style.opacity=1;
+  }, 500);
+}
+setInterval(rotatePoetry, 12000);
+
+/* ==========================================
+  SCENES
+========================================== */
+const scenes = ['background.png','forest.jpg','night.jpg','snow.jpg','desert.jpg'];
+let sceneIndex = 0;
+document.getElementById('sceneBtn').addEventListener('click', ()=>{
+  sceneIndex = (sceneIndex+1) % scenes.length;
+  document.getElementById('bg').style.backgroundImage = `url('${scenes[sceneIndex]}')`;
+  setActiveDock('sceneBtn');
+});
+
+/* ==========================================
+  RAIN
+========================================== */
+const rainAudio = document.getElementById('rainAudio');
+const rainOverlay = document.getElementById('rainOverlay');
+let rainOn = false;
+document.getElementById('rainBtn').addEventListener('click', ()=>{
+  rainOn = !rainOn;
+  if(rainOn){ rainAudio.volume=.3; rainAudio.play(); rainOverlay.classList.add('rain-active'); }
+  else{ rainAudio.pause(); rainOverlay.classList.remove('rain-active'); }
+  toggleDock('rainBtn', rainOn);
+});
+
+/* ==========================================
+  BREEZE
+========================================== */
+const breezeAudio = document.getElementById('breezeAudio');
+let breezeOn = false;
+document.getElementById('breezeBtn').addEventListener('click', ()=>{
+  breezeOn = !breezeOn;
+  if(breezeOn){ breezeAudio.volume=.25; breezeAudio.play(); }
+  else breezeAudio.pause();
+  toggleDock('breezeBtn', breezeOn);
+});
+
+/* ==========================================
+  FULLSCREEN
+========================================== */
+document.getElementById('fullscreenBtn').addEventListener('click', ()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+
+/* ==========================================
+  DOCK HELPERS
+========================================== */
+function setActiveDock(id){ document.querySelectorAll('.dock-item').forEach(el=>el.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function toggleDock(id, on){ document.getElementById(id).classList.toggle('active', on); }
+
+/* ==========================================
+  KEYBOARD
+========================================== */
+document.addEventListener('keydown', e=>{
+  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.code==='Space'){ e.preventDefault(); playBtn.click(); }
+  if(e.code==='ArrowRight') nextBtn.click();
+  if(e.code==='ArrowLeft') prevBtn.click();
+});
+
+/* ==========================================
+  PARALLAX — only moves hero, not progress
+========================================== */
+const heroEl = document.getElementById('hero');
+document.addEventListener('mousemove', e=>{
+  const x = (e.clientX/window.innerWidth) - 0.5;
+  const y = (e.clientY/window.innerHeight) - 0.5;
+  heroEl.style.transform = `translateX(calc(-50% + ${x*10}px)) translateY(${y*10}px)`;
+});
+
+/* ==========================================
+  FX POPUP
+========================================== */
+const fxPopup = document.getElementById('fxPopup');
+document.getElementById('fxBtn').addEventListener('click', ()=>{
+  fxPopup.classList.add('open');
+});
+document.getElementById('fxClose').addEventListener('click', ()=>{
+  fxPopup.classList.remove('open');
+});
+fxPopup.addEventListener('click', e=>{ if(e.target===fxPopup) fxPopup.classList.remove('open'); });
+
+// Bass
+document.getElementById('bassSlider').addEventListener('input', function(){
+  document.getElementById('bassVal').textContent = this.value;
+  if(bassFilter){ initAudioContext(); bassFilter.gain.value = parseFloat(this.value); }
+});
+// Reverb
+document.getElementById('reverbSlider').addEventListener('input', function(){
+  document.getElementById('reverbVal').textContent = this.value;
+  if(reverbGain){ initAudioContext(); reverbGain.gain.value = parseFloat(this.value)/100 * 0.8; dryGain.gain.value = 1 - (parseFloat(this.value)/100*0.4); }
+});
+// Treble
+document.getElementById('trebleSlider').addEventListener('input', function(){
+  document.getElementById('trebleVal').textContent = this.value;
+  if(trebleFilter){ initAudioContext(); trebleFilter.gain.value = parseFloat(this.value); }
+});
+// Lo-fi toggle
+document.getElementById('lofiToggle').addEventListener('click', function(){
+  lofiActive = !lofiActive;
+  this.classList.toggle('on', lofiActive);
+  if(lofiFilter){ initAudioContext(); lofiFilter.frequency.value = lofiActive ? 2800 : 20000; }
+});
+// Vinyl toggle
+document.getElementById('vinylToggle').addEventListener('click', function(){
+  vinylActive = !vinylActive;
+  this.classList.toggle('on', vinylActive);
+  if(vinylActive){ initAudioContext(); startVinyl(); }
+  else stopVinyl();
+});
+
+/* ==========================================
+  SEARCH POPUP
+========================================== */
+const searchPopup = document.getElementById('searchPopup');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+
+function openSearch(){
+  searchPopup.classList.add('open');
+  searchInput.value='';
+  renderSearchResults('');
+  setTimeout(()=> searchInput.focus(), 100);
+}
+function closeSearch(){ searchPopup.classList.remove('open'); }
+
+songTitle.addEventListener('click', openSearch);
+songArtist.addEventListener('click', openSearch);
+document.getElementById('searchClose').addEventListener('click', closeSearch);
+searchPopup.addEventListener('click', e=>{ if(e.target===searchPopup) closeSearch(); });
+
+searchInput.addEventListener('input', ()=> renderSearchResults(searchInput.value));
+
+function renderSearchResults(query){
+  const q = query.toLowerCase().trim();
+  const filtered = playlist.map((s,i)=>({...s,index:i})).filter(s=>
+    !q || s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
+  ).slice(0, 60);
+
+  if(!filtered.length){
+    searchResults.innerHTML = '<div class="search-empty">No songs found</div>';
+    return;
+  }
+
+  searchResults.innerHTML = filtered.map(s=>`
+    <div class="search-result-item ${s.index===currentSong?'playing':''}" data-index="${s.index}">
+      <span class="search-num">${s.index+1}</span>
+      <div class="search-info">
+        <div class="search-song">${s.title}</div>
+        <div class="search-artist">${s.artist}</div>
+      </div>
+      <span class="search-play-icon">${s.index===currentSong && isPlaying ? '▶' : '▶'}</span>
+    </div>
+  `).join('');
+
+  searchResults.querySelectorAll('.search-result-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = parseInt(el.dataset.index);
+      loadSong(idx, true);
+      playSong();
+      closeSearch();
+    });
+  });
+}
+
+function updateSearchHighlight(){
+  searchResults.querySelectorAll('.search-result-item').forEach(el=>{
+    el.classList.toggle('playing', parseInt(el.dataset.index)===currentSong);
+  });
+}
+
+/* ==========================================
+  INIT
+========================================== */
+
+
+// Animate hero on load
+window.addEventListener('load', ()=>{
+  heroEl.animate(
+    [{opacity:0,transform:'translateX(-50%) translateY(20px)'},{opacity:1,transform:'translateX(-50%) translateY(0)'}],
+    {duration:1200, easing:'ease-out'}
+  );
+});
+</script>
+</body>
+</html>
