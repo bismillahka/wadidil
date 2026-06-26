@@ -1,42 +1,202 @@
 [
-  { "file": "500 Miles.mp3", "title": "500 Miles", "artist": "Unknown" },
-  { "file": "Aam Jahe Munde  |  Parmish Verma feat Pardhaan.mp3", "title": "Aam Jahe Munde", "artist": "Parmish Verma feat Pardhaan" },
-  { "file": "Abdul Hannan & Rovalio - Iraaday (Official Music Video).mp3", "title": "Iraaday", "artist": "Abdul Hannan & Rovalio" },
-  { "file": "Alan Walker - Faded.mp3", "title": "Faded", "artist": "Alan Walker" },
-  { "file": "Alex Warren - Ordinary (Official Video).mp3", "title": "Ordinary", "artist": "Alex Warren" },
-  { "file": "AURORA - Runaway.mp3", "title": "Runaway", "artist": "AURORA" },
-  { "file": "Avicii - The Nights.mp3", "title": "The Nights", "artist": "Avicii" },
-  { "file": "Bayaan  |  Hasan Raheem  |  Rovalio - Maand (Lyric Video).mp3", "title": "Maand", "artist": "Hasan Raheem & Rovalio" },
-  { "file": "Billie Eilish, Khalid - lovely.mp3", "title": "lovely", "artist": "Billie Eilish, Khalid" },
-  { "file": "Blackmail - Pal Pal Dil Ke Paas Tum Rehti Ho - Kishore Kumar.mp3", "title": "Pal Pal Dil Ke Paas Tum Rehti Ho", "artist": "Kishore Kumar" },
-  { "file": "Bol Na Halke Halke  |  Abhishek, Preity.mp3", "title": "Bol Na Halke Halke", "artist": "Abhishek, Preity" },
-  { "file": "By My Side.mp3", "title": "By My Side", "artist": "Unknown" },
-  { "file": "Da Che Za Zan Lewany Kam.mp3", "title": "Da Che Za Zan Lewany Kam", "artist": "Unknown" },
-  { "file": "Daanah Pah Daanah  |  Akhtar Chanal Zahri & Komal Rizvi.mp3", "title": "Daanah Pah Daanah", "artist": "Akhtar Chanal Zahri & Komal Rizvi" },
-  { "file": "Elley Duhé - MIDDLE OF THE NIGHT (Official Video).mp3", "title": "MIDDLE OF THE NIGHT", "artist": "Elley Duhé" },
-  { "file": "Haroon Bacha – La Ta Zaar.mp3", "title": "La Ta Zaar", "artist": "Haroon Bacha" },
-  { "file": "Heer - Ali Raza & Shjr x Haider Ali.mp3", "title": "Heer", "artist": "Ali Raza & Shjr x Haider Ali" },
-  { "file": "HUMSAFAR (Official Music Video)  |  Sugat Dhanvijay.mp3", "title": "HUMSAFAR", "artist": "Sugat Dhanvijay" },
-  { "file": "Humsafar  |  OST by Qurat-ul-Ain Balouch  |  HUM Music.mp3", "title": "Humsafar (OST)", "artist": "Qurat-ul-Ain Balouch" },
-  { "file": "Ijaz Ufaq ｜ Halaka Musalmana.mp3", "title": "Halaka Musalmana", "artist": "Ijaz Ufaq" },
-  { "file": "Ijaz Ufaq – Da Janan Khayal Me Zangw.mp3", "title": "Da Janan Khayal Me Zangw", "artist": "Ijaz Ufaq" },
-  { "file": "Javed Amirkhail - Stergy De Deeway Di (Official Music).mp3", "title": "Stergy De Deeway Di", "artist": "Javed Amirkhail" },
-  { "file": "Joji -  Glimpse of Us.mp3", "title": "Glimpse of Us", "artist": "Joji" },
-  { "file": "Judai  |  Ali & Shjr  |  Official Music Video.mp3", "title": "Judai", "artist": "Ali & Shjr" },
-  { "file": "Kat Kat Khanday ｜ Ijaz Ufaq.mp3", "title": "Kat Kat Khanday", "artist": "Ijaz Ufaq" },
-  { "file": "Khayesta Makh Pa Kato Marega Na.mp3", "title": "Khayesta Makh Pa Kato Marega Na", "artist": "Unknown" },
-  { "file": "La Casa de Papel  |  My Life Is Going On - - Cecilia Krull.mp3", "title": "My Life Is Going On", "artist": "Cecilia Krull" },
-  { "file": "Laykin  |  Ali & Shjr.mp3", "title": "Laykin", "artist": "Ali & Shjr" },
-  { "file": "Loreen - Tattoo (Official Audio).mp3", "title": "Tattoo", "artist": "Loreen" },
-  { "file": "Noor, Khan & Madhurxo - Aarzu (Official Audio).mp3", "title": "Aarzu", "artist": "Noor, Khan & Madhurxo" },
-  { "file": "Pa Sada Sada Khabara.mp3", "title": "Pa Sada Sada Khabara", "artist": "Unknown" },
-  { "file": "Pashto New Songs 2020  |  Zubair Nawaz.mp3", "title": "Pashto New Songs 2020", "artist": "Zubair Nawaz" },
-  { "file": "Reidi Gull Ghani Khan Baba Mehran Khan.mp3", "title": "Reidi Gull", "artist": "Ghani Khan & Baba Mehran Khan" },
-  { "file": "Saqi Dasi Masti.mp3", "title": "Saqi Dasi Masti", "artist": "Unknown" },
-  { "file": "Shakira, Burna Boy - Dai Dai (Official Video).mp3", "title": "Dai Dai", "artist": "Shakira, Burna Boy" },
-  { "file": "Sheen Khalai  |  Naghma.mp3", "title": "Sheen Khalai", "artist": "Naghma" },
-  { "file": "Ulas Janaan Krra.mp3", "title": "Ulas Janaan Krra", "artist": "Unknown" },
-  { "file": "Wishful - Lyrical Video  |  Ali Raza & Shjr  |  Lost Path.mp3", "title": "Wishful", "artist": "Ali Raza & Shjr" },
-  { "file": "Witt Lowry - Into Your Arms (feat. Ava Max) (Official Music Video).mp3", "title": "Into Your Arms", "artist": "Witt Lowry feat. Ava Max" },
-  { "file": "Zamaana Lage Lofi Flip  |  Arijit Singh.mp3", "title": "Zamaana Lage (Lofi)", "artist": "Arijit Singh" }
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/500%20Miles.mp3",
+    "title": "500 Miles",
+    "artist": "Unknown"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Aam%20Jahe%20Munde%20%20%7C%20%20Parmish%20Verma%20feat%20Pardhaan.mp3",
+    "title": "Aam Jahe Munde",
+    "artist": "Parmish Verma feat Pardhaan"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Abdul%20Hannan%20%26%20Rovalio%20-%20Iraaday%20%28Official%20Music%20Video%29.mp3",
+    "title": "Iraaday",
+    "artist": "Abdul Hannan & Rovalio"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Alan%20Walker%20-%20Faded.mp3",
+    "title": "Faded",
+    "artist": "Alan Walker"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Alex%20Warren%20-%20Ordinary%20%28Official%20Video%29.mp3",
+    "title": "Ordinary",
+    "artist": "Alex Warren"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/AURORA%20-%20Runaway.mp3",
+    "title": "Runaway",
+    "artist": "AURORA"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Avicii%20-%20The%20Nights.mp3",
+    "title": "The Nights",
+    "artist": "Avicii"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Bayaan%20%20%7C%20%20Hasan%20Raheem%20%20%7C%20%20Rovalio%20-%20Maand%20%28Lyric%20Video%29.mp3",
+    "title": "Maand",
+    "artist": "Hasan Raheem & Rovalio"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Billie%20Eilish%2C%20Khalid%20-%20lovely.mp3",
+    "title": "lovely",
+    "artist": "Billie Eilish, Khalid"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Blackmail%20-%20Pal%20Pal%20Dil%20Ke%20Paas%20Tum%20Rehti%20Ho%20-%20Kishore%20Kumar.mp3",
+    "title": "Pal Pal Dil Ke Paas Tum Rehti Ho",
+    "artist": "Kishore Kumar"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Bol%20Na%20Halke%20Halke%20%20%7C%20%20Abhishek%2C%20Preity.mp3",
+    "title": "Bol Na Halke Halke",
+    "artist": "Abhishek, Preity"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/By%20My%20Side.mp3",
+    "title": "By My Side",
+    "artist": "Unknown"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Da%20Che%20Za%20Zan%20Lewany%20Kam.mp3",
+    "title": "Da Che Za Zan Lewany Kam",
+    "artist": "Unknown"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Daanah%20Pah%20Daanah%20%20%7C%20%20Akhtar%20Chanal%20Zahri%20%26%20Komal%20Rizvi.mp3",
+    "title": "Daanah Pah Daanah",
+    "artist": "Akhtar Chanal Zahri & Komal Rizvi"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Elley%20Duh%C3%A9%20-%20MIDDLE%20OF%20THE%20NIGHT%20%28Official%20Video%29.mp3",
+    "title": "MIDDLE OF THE NIGHT",
+    "artist": "Elley Duhé"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Haroon%20Bacha%20%E2%80%93%20La%20Ta%20Zaar.mp3",
+    "title": "La Ta Zaar",
+    "artist": "Haroon Bacha"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Heer%20-%20Ali%20Raza%20%26%20Shjr%20x%20Haider%20Ali.mp3",
+    "title": "Heer",
+    "artist": "Ali Raza & Shjr x Haider Ali"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/HUMSAFAR%20%28Official%20Music%20Video%29%20%20%7C%20%20Sugat%20Dhanvijay.mp3",
+    "title": "HUMSAFAR",
+    "artist": "Sugat Dhanvijay"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Humsafar%20%20%7C%20%20OST%20by%20Qurat-ul-Ain%20Balouch%20%20%7C%20%20HUM%20Music.mp3",
+    "title": "Humsafar (OST)",
+    "artist": "Qurat-ul-Ain Balouch"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Ijaz%20Ufaq%20%20%7C%20%20Halaka%20Musalmana.mp3",
+    "title": "Halaka Musalmana",
+    "artist": "Ijaz Ufaq"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Ijaz%20Ufaq%20%E2%80%93%20Da%20Janan%20Khayal%20Me%20Zangw.mp3",
+    "title": "Da Janan Khayal Me Zangw",
+    "artist": "Ijaz Ufaq"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Javed%20Amirkhail%20-%20Stergy%20De%20Deeway%20Di%20%28Official%20Music%29.mp3",
+    "title": "Stergy De Deeway Di",
+    "artist": "Javed Amirkhail"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Joji%20-%20Glimpse%20of%20Us.mp3",
+    "title": "Glimpse of Us",
+    "artist": "Joji"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Judai%20%20%7C%20%20Ali%20%26%20Shjr%20%20%7C%20%20Official%20Music%20Video.mp3",
+    "title": "Judai",
+    "artist": "Ali & Shjr"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Kat%20Kat%20Khanday%20%20%7C%20%20Ijaz%20Ufaq.mp3",
+    "title": "Kat Kat Khanday",
+    "artist": "Ijaz Ufaq"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Khayesta%20Makh%20Pa%20Kato%20Marega%20Na.mp3",
+    "title": "Khayesta Makh Pa Kato Marega Na",
+    "artist": "Unknown"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/La%20Casa%20de%20Papel%20%20%7C%20%20My%20Life%20Is%20Going%20On%20-%20-%20Cecilia%20Krull.mp3",
+    "title": "My Life Is Going On",
+    "artist": "Cecilia Krull"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Laykin%20%20%7C%20%20Ali%20%26%20Shjr.mp3",
+    "title": "Laykin",
+    "artist": "Ali & Shjr"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Loreen%20-%20Tattoo%20%28Official%20Audio%29.mp3",
+    "title": "Tattoo",
+    "artist": "Loreen"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Noor%2C%20Khan%20%26%20Madhurxo%20-%20Aarzu%20%28Official%20Audio%29.mp3",
+    "title": "Aarzu",
+    "artist": "Noor, Khan & Madhurxo"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Pa%20Sada%20Sada%20Khabara.mp3",
+    "title": "Pa Sada Sada Khabara",
+    "artist": "Unknown"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Pashto%20New%20Songs%202020%20%20%7C%20%20Zubair%20Nawaz.mp3",
+    "title": "Pashto New Songs 2020",
+    "artist": "Zubair Nawaz"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Reidi%20Gull%20Ghani%20Khan%20Baba%20Mehran%20Khan.mp3",
+    "title": "Reidi Gull",
+    "artist": "Ghani Khan & Baba Mehran Khan"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Saqi%20Dasi%20Masti.mp3",
+    "title": "Saqi Dasi Masti",
+    "artist": "Unknown"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Shakira%2C%20Burna%20Boy%20-%20Dai%20Dai%20%28Official%20Video%29.mp3",
+    "title": "Dai Dai",
+    "artist": "Shakira, Burna Boy"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Sheen%20Khalai%20%20%7C%20%20Naghma.mp3",
+    "title": "Sheen Khalai",
+    "artist": "Naghma"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Ulas%20Janaan%20Krra.mp3",
+    "title": "Ulas Janaan Krra",
+    "artist": "Unknown"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Wishful%20-%20Lyrical%20Video%20%20%7C%20%20Ali%20Raza%20%26%20Shjr%20%20%7C%20%20Lost%20Path.mp3",
+    "title": "Wishful",
+    "artist": "Ali Raza & Shjr"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Witt%20Lowry%20-%20Into%20Your%20Arms%20%28feat.%20Ava%20Max%29%20%28Official%20Music%20Video%29.mp3",
+    "title": "Into Your Arms",
+    "artist": "Witt Lowry feat. Ava Max"
+  },
+  {
+    "file": "https://pub-8c1429a65ff94c99881d10d06f1a84a6.r2.dev/Zamaana%20Lage%20Lofi%20Flip%20%20%7C%20%20Arijit%20Singh.mp3",
+    "title": "Zamaana Lage (Lofi)",
+    "artist": "Arijit Singh"
+  }
 ]
